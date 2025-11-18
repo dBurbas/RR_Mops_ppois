@@ -1,0 +1,9 @@
+concept_bus_route
+<- sc_node_class;
+=> nrel_main_idtf:
+    [автобусный маршрут]
+    (*
+        <- lang_ru;;
+    *);
+<= nrel_inclusion:
+    concept_route;;
