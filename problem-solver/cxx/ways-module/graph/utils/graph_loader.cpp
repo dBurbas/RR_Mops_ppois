@@ -28,7 +28,7 @@ Graph GraphLoader::LoadGraph(std::string const & path, char const & separator = 
       StringFormatter::Ltrim(str);
       if (str.empty())
       {
-        throw std::invalid_argument("You have invalid data in your scv file!");
+        throw std::invalid_argument("Invalid data in your scv file!");
       }
     }
     start_district = result_of_split[0];
