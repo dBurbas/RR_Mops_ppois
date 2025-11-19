@@ -1,0 +1,43 @@
+#include "string_formatter.hpp"
+
+void StringFormatter::Ltrim(std::string & str)
+{
+  int start_pos = 0;
+  while (start_pos < str.size() and std::isspace(str[start_pos]))
+  {
+    start_pos++;
+  }
+  int length = str.size() - start_pos;
+  str = str.substr(start_pos, length);
+}
+
+void StringFormatter::Rtrim(std::string & str)
+{
+  int start_pos = str.size() - 1;
+  while (start_pos >= 0 and std::isspace(str[start_pos]))
+  {
+    start_pos--;
+  }
+  int length = start_pos + 1;
+  str = str.substr(0, length);
+}
+
+std::vector<std::string> StringFormatter::Split(std::string const & str, char const & separator)
+{
+  std::vector<std::string> result_of_split;
+  int start_pos = 0;
+  int prev_pos = 0;
+
+  while (start_pos < str.size())
+  {
+    if (str[start_pos] == separator)
+    {
+      result_of_split.push_back(str.substr(prev_pos, start_pos - prev_pos));
+      prev_pos = start_pos + 1;
+    }
+    start_pos++;
+  }
+
+  result_of_split.push_back(str.substr(prev_pos));
+  return result_of_split;
+}
