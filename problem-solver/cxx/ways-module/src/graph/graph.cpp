@@ -8,17 +8,16 @@ void Graph::AddVertex(
     std::string const & type_of_route)
 {
   auto vertex_validator = VertexValidator();
-  auto graph = this->adjacency_lists_;
-  if (vertex_validator.Validate(graph[start_district], std::make_pair(end_district, type_of_route)))
+  if (vertex_validator.Validate(this->adjacency_lists_[start_district], std::make_pair(end_district, type_of_route)))
   {
     throw std::logic_error("Such vertex already exist!");
   }
-  if (vertex_validator.Validate(graph[end_district], std::make_pair(start_district, type_of_route)))
+  if (vertex_validator.Validate(this->adjacency_lists_[end_district], std::make_pair(start_district, type_of_route)))
   {
     throw std::logic_error("Such vertex already exist!");
   }
-  graph[start_district].push_back(std::make_pair(end_district, type_of_route));
-  graph[end_district].push_back(std::make_pair(start_district, type_of_route));
+  this->adjacency_lists_[start_district].push_back(std::make_pair(end_district, type_of_route));
+  this->adjacency_lists_[end_district].push_back(std::make_pair(start_district, type_of_route));
 }
 
 std::map<std::string, std::vector<std::pair<std::string, std::string>>> Graph::GetGraph() const

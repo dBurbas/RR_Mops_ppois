@@ -2,7 +2,7 @@
 #include "../../utils/string_formatter.hpp"
 #include <fstream>
 
-Graph GraphLoader::LoadGraph(std::string const & path, char const & separator = ';')
+Graph GraphLoader::LoadGraph(std::string const & path, char const & separator)
 {
   std::ifstream file(path);
 
@@ -20,6 +20,7 @@ Graph GraphLoader::LoadGraph(std::string const & path, char const & separator = 
     auto result_of_split = StringFormatter::Split(line, separator);
     if (result_of_split.size() != 3)
     {
+      file.close();
       throw std::logic_error("Your scv file is not correct!");
     }
     for (auto str : result_of_split)
@@ -34,5 +35,15 @@ Graph GraphLoader::LoadGraph(std::string const & path, char const & separator = 
     start_district = result_of_split[0];
     end_district = result_of_split[1];
     type_of_route = result_of_split[2];
+    try
+    {
+      graph.AddVertex(start_district, end_district, type_of_route);
+    }
+    catch (...)
+    {
+      file.close();
+    }
   }
+  file.close();
+  return graph;
 }
