@@ -7,5 +7,5 @@ class CreateGraphAgent : public ScActionInitiatedAgent
 public:
   CreateGraphAgent();
   ScAddr GetActionClass() const override;
-  ScResult DoProgram(ScAction & action) override;
+  ScResult DoProgram(ScActionInitiatedEvent const & event, ScAction & action) override;
 };
