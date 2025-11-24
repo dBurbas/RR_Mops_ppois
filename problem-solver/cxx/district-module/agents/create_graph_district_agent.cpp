@@ -111,22 +111,27 @@ ScResult CreateGraphAgent::DoProgram(ScActionInitiatedEvent const & event, ScAct
     ScAddr const & nrelRoad = m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::nrel_road, road);
     m_logger.Info("Create nrel road between two districts");
 
+    m_logger.Debug("Try create structure");
     ScStructure route = m_context.GenerateStructure();
-    // route << start_district_node << end_district_node << road << node_of_road;
+    route << start_district_node << end_district_node;
+    m_logger.Info("Success create structure");
 
-    // ScAddr type_of_route = m_context.GenerateNode(ScType::ConstNode);
-    // if (typeOfRoute.find("автобус") != std::string::npos)
-    // {
-    //   m_context.SetElementSystemIdentifier(GraphKeynodes::concept_bus_route, type_of_route);
-    // }
-    // else if (typeOfRoute.find("трамвай") != std::string::npos)
-    // {
-    //   m_context.SetElementSystemIdentifier(GraphKeynodes::concept_tram_route, type_of_route);
-    // }
-    // else
-    // {
-    //   m_context.SetElementSystemIdentifier(GraphKeynodes::concept_subway_route, type_of_route);
-    // }
+    m_logger.Debug("Try to create undefined type of route");
+    ScAddr type_of_route;
+    if (typeOfRoute.find("автобус") != std::string::npos)
+    {
+      type_of_route = m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_bus_route, route);
+    }
+    else if (typeOfRoute.find("трамвай") != std::string::npos)
+    {
+      type_of_route = m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_tram_route, route);
+    }
+    else
+    {
+      type_of_route = m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_subway_route, route);
+    }
+
+    m_logger.Info("Success create type of route");
 
     // ScAddr route_belong = m_context.GenerateConnector(ScType::ConstPermPosArc, type_of_route, route);
 
