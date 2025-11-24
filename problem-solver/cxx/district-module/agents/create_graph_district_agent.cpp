@@ -18,13 +18,16 @@ ScAddr CreateGraphAgent::GetActionClass() const
   return GraphKeynodes::action_construct_an_undirected_transport_graph;
 }
 
-ScAddr CreateGraphAgent::GetDistrict(std::string const & nameOfDistrict, int & number_of_districts)
+void CreateGraphAgent::GetDistrict(
+    ScAddr & district_node,
+    std::string const & nameOfDistrict,
+    int & number_of_districts)
 {
-  auto district = translate_map_.find(nameOfDistrict);
-  if (district == translate_map_.end())
+  auto district = this->translate_map_.find(nameOfDistrict);
+  if (district == this->translate_map_.end())
   {
     std::string const & resultSystemIdentifier = BASE_NAME_OF_NODES + std::to_string(number_of_districts);
-    ScAddr district_node = m_context.GenerateNode(ScType::ConstNode);
+    district_node = m_context.GenerateNode(ScType::ConstNode);
     m_context.SetElementSystemIdentifier(resultSystemIdentifier, district_node);
 
     ScAddr const & linkName = m_context.GenerateLink(ScType::ConstNodeLink);
@@ -37,14 +40,12 @@ ScAddr CreateGraphAgent::GetDistrict(std::string const & nameOfDistrict, int & n
     this->districts_.push_back(district_node);
     this->translate_map_[nameOfDistrict] = resultSystemIdentifier;
     number_of_districts++;
-    return district_node;
   }
   else
   {
     std::string const & resultSystemIdentifier = this->translate_map_[nameOfDistrict];
     int const & resIndex = StringOperationInSystemIdentifier::GetSystemIdentifier(resultSystemIdentifier);
-    ScAddr district_node = districts_[resIndex];
-    return district_node;
+    district_node = this->districts_[resIndex];
   }
 }
 
@@ -81,7 +82,7 @@ ScResult CreateGraphAgent::DoProgram(ScActionInitiatedEvent const & event, ScAct
     m_logger.Debug("Start district try to create");
     try
     {
-      start_district_node = GetDistrict(startDistrict, number_of_districts);
+      GetDistrict(start_district_node, startDistrict, number_of_districts);
     }
     catch (std::logic_error const & e)
     {
@@ -93,7 +94,7 @@ ScResult CreateGraphAgent::DoProgram(ScActionInitiatedEvent const & event, ScAct
     m_logger.Debug("End district try to create");
     try
     {
-      end_district_node = GetDistrict(endDistrict, number_of_districts);
+      GetDistrict(end_district_node, endDistrict, number_of_districts);
     }
     catch (std::logic_error const & e)
     {
