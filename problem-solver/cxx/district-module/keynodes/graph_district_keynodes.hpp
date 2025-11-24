@@ -9,6 +9,7 @@ public:
   static inline ScKeynode const nrel_file_path{"nrel_file_path", ScType::ConstNodeNonRole};
   static inline ScKeynode const nrel_road{"nrel_road", ScType::ConstNodeNonRole};
   static inline ScKeynode const nrel_name{"nrel_name", ScType::ConstNodeNonRole};
+  static inline ScKeynode const nrel_number{"nrel_number", ScType::ConstNodeNonRole};
   static inline ScKeynode const concept_bus_route{"concept_bus_route", ScType::ConstNodeClass};
   static inline ScKeynode const concept_tram_route{"concept_tram_route", ScType::ConstNodeClass};
   static inline ScKeynode const concept_subway_route{"concept_subway_route", ScType::ConstNodeClass};

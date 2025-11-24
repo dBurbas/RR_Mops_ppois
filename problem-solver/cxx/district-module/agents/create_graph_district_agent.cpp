@@ -35,7 +35,7 @@ void CreateGraphAgent::GetDistrict(
 
     ScAddr const & arcCommonAddr = m_context.GenerateConnector(ScType::ConstCommonArc, district_node, linkName);
     ScAddr const & resDistrict =
-        m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::nrel_name, arcCommonAddr);
+        m_context.GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::nrel_main_idtf, arcCommonAddr);
 
     this->districts_.push_back(district_node);
     this->translate_map_[nameOfDistrict] = resultSystemIdentifier;
@@ -59,9 +59,7 @@ ScResult CreateGraphAgent::DoProgram(ScActionInitiatedEvent const & event, ScAct
   std::string scv_file_data;
 
   m_logger.Debug("Find link");
-
   m_context.GetLinkContent(elementAddr, scv_file_data);
-
   m_logger.Debug("We get path and ready to create graph\n");
 
   // ScStructure city = m_context.GenerateStructure();
@@ -130,8 +128,20 @@ ScResult CreateGraphAgent::DoProgram(ScActionInitiatedEvent const & event, ScAct
     {
       type_of_route = m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_subway_route, route);
     }
-
     m_logger.Info("Success create type of route");
+
+    m_logger.Debug("Try create link number of route");
+    ScAddr const & linkNumberOfRoute = m_context.GenerateLink(ScType::ConstNodeLink);
+    // TODO: logic of dividing number
+    std::string const & str = "№ 5";
+    m_context.SetLinkContent(linkNumberOfRoute, str);
+    m_logger.Info("Create success link nubmer or route");
+
+    m_logger.Debug("Try create connection between route and link");
+    ScAddr const & arcCommonAddr = m_context.GenerateConnector(ScType::ConstCommonArc, route, linkNumberOfRoute);
+    ScAddr const & nrelNumber =
+        m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::nrel_number, arcCommonAddr);
+    m_logger.Info("Success create connection between route and link");
 
     // ScAddr route_belong = m_context.GenerateConnector(ScType::ConstPermPosArc, type_of_route, route);
 
