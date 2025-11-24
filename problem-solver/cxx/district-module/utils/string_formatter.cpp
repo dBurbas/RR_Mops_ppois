@@ -1,4 +1,5 @@
 #include "string_formatter.hpp"
+#include <stdexcept>
 
 void StringFormatter::Ltrim(std::string & str)
 {
@@ -43,4 +44,18 @@ std::vector<std::string> StringFormatter::Split(std::string const & str, char co
   }
 
   return result_of_split;
+}
+
+int StringOperationInSystemIdentifier::GetSystemIdentifier(std::string const & str)
+{
+  int underscore_symbol = str.size() - 1;
+  while (underscore_symbol >= 0 && str[underscore_symbol] != '_')
+  {
+    underscore_symbol -= 1;
+  }
+  if (underscore_symbol < 0)
+  {
+    throw std::logic_error("Incorrect string");
+  }
+  return std::stoi(str.substr(underscore_symbol + 1));
 }
