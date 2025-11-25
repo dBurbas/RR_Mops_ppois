@@ -7,7 +7,7 @@
 #include <vector>
 #include <fstream>
 #include <map>
-
+// TODO: Добавить документацию
 CreateGraphAgent::CreateGraphAgent()
 {
   m_logger = utils::ScLogger(utils::ScLogger::ScLogType::File, "logs/CreateGraphAgent.log", utils::ScLogLevel::Debug);
@@ -51,6 +51,9 @@ void CreateGraphAgent::GetDistrict(
 
 ScResult CreateGraphAgent::DoProgram(ScActionInitiatedEvent const & event, ScAction & action)
 {
+  // TODO: Разбить на отдельные функции
+  // TODO: Переделать под SC Code Style :D
+  // TODO: убрать лишние m_logger.Debug
   m_logger.Debug("start");
   ScIterator5Ptr const it5 = m_context.CreateIterator5(
       action, ScType::ConstCommonArc, ScType::ConstNodeLink, ScType::ConstPermPosArc, GraphKeynodes::nrel_file_path);
@@ -62,7 +65,7 @@ ScResult CreateGraphAgent::DoProgram(ScActionInitiatedEvent const & event, ScAct
   m_context.GetLinkContent(elementAddr, scv_file_data);
   m_logger.Debug("We get path and ready to create graph\n");
 
-  // ScStructure city = m_context.GenerateStructure();
+  ScStructure city = m_context.GenerateStructure();
 
   auto resOfSplit = StringFormatter::Split(scv_file_data, '\n');
   int number_of_districts = 0;
@@ -110,6 +113,7 @@ ScResult CreateGraphAgent::DoProgram(ScActionInitiatedEvent const & event, ScAct
     m_logger.Info("Create nrel road between two districts");
 
     m_logger.Debug("Try create structure");
+    // TODO: Добавить системный идентификатор для структур route-ов по типу route_0, route_1 ... 
     ScStructure route = m_context.GenerateStructure();
     route << start_district_node << end_district_node;
     m_logger.Info("Success create structure");
@@ -132,9 +136,8 @@ ScResult CreateGraphAgent::DoProgram(ScActionInitiatedEvent const & event, ScAct
 
     m_logger.Debug("Try create link number of route");
     ScAddr const & linkNumberOfRoute = m_context.GenerateLink(ScType::ConstNodeLink);
-    // TODO: logic of dividing number
-    std::string const & str = "№ 5";
-    m_context.SetLinkContent(linkNumberOfRoute, str);
+    std::string number_of_route = DividerNumberFromString::GetNumberOfRoute(typeOfRoute);
+    m_context.SetLinkContent(linkNumberOfRoute, number_of_route);
     m_logger.Info("Create success link nubmer or route");
 
     m_logger.Debug("Try create connection between route and link");
@@ -142,11 +145,23 @@ ScResult CreateGraphAgent::DoProgram(ScActionInitiatedEvent const & event, ScAct
     ScAddr const & nrelNumber =
         m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::nrel_number, arcCommonAddr);
     m_logger.Info("Success create connection between route and link");
-
-    // ScAddr route_belong = m_context.GenerateConnector(ScType::ConstPermPosArc, type_of_route, route);
-
-    // city << route << type_of_route << route_belong;
+    m_logger.Debug("Try to add route to city");
+    city << route;
+    m_logger.Info("Succesffuly add route to city");
   }
-
+  m_logger.Debug("Try to create city name");
+  ScAddr const & linkCityName = m_context.GenerateLink(ScType::ConstNodeLink);
+  // TODO: Подумать на счет того чтобы брать имя города из имени файла csv к примеру: Маршруты_Новосибирска.csv
+  m_context.SetLinkContent(linkCityName, BASE_NAME_OF_CITY);
+  m_logger.Info("Succesffuly add name to city");
+  ScAddr const & nameCityArc = m_context.GenerateConnector(ScType::ConstCommonArc, city, linkCityName);
+  m_logger.Debug("Try to create nrel city name");
+  ScAddr const & nameCityArcNrel =
+      m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::nrel_name, nameCityArc);
+  m_logger.Info("Succesfully create nrel city name");
+  // TODO: Сделать привязку структуры города к результату (подсказал Никита Владимирович ЗотоВ)
+  // ScStructure result = m_context.GenerateStructure();
+  // result << element1;
+  // action.SetResult(result);
   return action.FinishSuccessfully();
 }

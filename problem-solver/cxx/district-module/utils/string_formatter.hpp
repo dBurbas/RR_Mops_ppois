@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-
+// TODO: Добавить документацию
 class StringFormatter
 {
 public:
@@ -15,4 +15,10 @@ class StringOperationInSystemIdentifier
 {
 public:
   static int GetSystemIdentifier(std::string const &);
+};
+
+class DividerNumberFromString
+{
+public:
+  static std::string GetNumberOfRoute(std::string const &);
 };
