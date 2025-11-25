@@ -21,8 +21,8 @@ ScAddr CreateGraphAgent::GetActionClass() const
 
 void CreateGraphAgent::GetDistrict(ScAddr & districtNode, std::string const & nameOfDistrict, int & numberOfDistricts)
 {
-  auto district = this->translate_map_.find(nameOfDistrict);
-  if (district == this->translate_map_.end())
+  auto district = this->translateMap_.find(nameOfDistrict);
+  if (district == this->translateMap_.end())
   {
     std::string const & resultSystemIdentifier = BASE_NAME_OF_NODES + std::to_string(numberOfDistricts);
     districtNode = m_context.GenerateNode(ScType::ConstNode);
@@ -35,15 +35,16 @@ void CreateGraphAgent::GetDistrict(ScAddr & districtNode, std::string const & na
     ScAddr const & resDistrict =
         m_context.GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::nrel_main_idtf, arcCommonAddr);
 
-    this->districts_.push_back(districtNode);
-    this->translate_map_[nameOfDistrict] = resultSystemIdentifier;
+    // this->districts_.push_back(districtNode);
+    this->translateMap_[nameOfDistrict] = resultSystemIdentifier;
     numberOfDistricts++;
   }
   else
   {
-    std::string const & resultSystemIdentifier = this->translate_map_[nameOfDistrict];
-    int const & resIndex = StringOperationInSystemIdentifier::GetSystemIdentifier(resultSystemIdentifier);
-    districtNode = this->districts_[resIndex];
+    std::string const & resultSystemIdentifier = this->translateMap_[nameOfDistrict];
+    districtNode = m_context.SearchElementBySystemIdentifier(resultSystemIdentifier);
+    // int const & resIndex = StringOperationInSystemIdentifier::GetSystemIdentifier(resultSystemIdentifier);
+    // districtNode = this->districts_[resIndex];
   }
 }
 
@@ -185,7 +186,12 @@ ScResult CreateGraphAgent::DoProgram(ScActionInitiatedEvent const & event, ScAct
       m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::nrel_name, nameCityArc);
   m_logger.Info("Succesfully create nrel city name");
 
-  // TODO: Сделать привязку структуры города к результату (подсказал Никита Владимирович Зотов
+  m_logger.Debug("Try to create action which make signalize that graph was built");
+  ScAddr const & actionSuccessBuildGraph =
+      m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::action_ready_to_analyze_city_routes, city);
+  m_logger.Info("Successful create action which make signalize that graph was built");
+
   action.SetResult(city);
+
   return action.FinishSuccessfully();
 }

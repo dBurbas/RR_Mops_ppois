@@ -13,6 +13,6 @@ public:
   ScResult DoProgram(ScActionInitiatedEvent const & event, ScAction & action) override;
 
 private:
-  std::map<std::string, std::string> translate_map_;
-  ScAddrVector districts_;
+  std::map<std::string, std::string> translateMap_;
+  // ScAddrVector districts_;
 };
