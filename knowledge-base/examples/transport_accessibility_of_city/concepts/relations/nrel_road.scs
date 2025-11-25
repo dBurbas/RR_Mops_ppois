@@ -1,0 +1,11 @@
+nrel_road
+<- sc_node_non_role_relation;
+=> nrel_main_idtf:
+    [дорога*]
+    (*
+        <- lang_ru;;
+    *);
+=> nrel_first_domain:
+    concept_district;
+=> nrel_second_domain:
+    concept_district;;
