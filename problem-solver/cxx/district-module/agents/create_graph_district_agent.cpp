@@ -135,7 +135,7 @@ void CreateGraphAgent::GenerateRoutes(std::vector<std::string> const & resOfSpli
     m_logger.Info("Success create connection between route and link");
 
     m_logger.Debug("Try to add route to city");
-    city << route;
+    city << route << arcCommonAddr << nrelNumber << linkNumberOfRoute;
     m_logger.Info("Succesffuly add route to city");
   }
 }
