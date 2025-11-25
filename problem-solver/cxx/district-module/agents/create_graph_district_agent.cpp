@@ -186,10 +186,10 @@ ScResult CreateGraphAgent::DoProgram(ScActionInitiatedEvent const & event, ScAct
       m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::nrel_name, nameCityArc);
   m_logger.Info("Succesfully create nrel city name");
 
-  m_logger.Debug("Try to create action which make signalize that graph was built");
+  m_logger.Debug("Try to create concept which make signalize that graph was built");
   ScAddr const & actionSuccessBuildGraph =
-      m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::action_ready_to_analyze_city_routes, city);
-  m_logger.Info("Successful create action which make signalize that graph was built");
+      m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_ready_to_analyze_city_routes, city);
+  m_logger.Info("Successful create concept which make signalize that graph was built");
 
   action.SetResult(city);
 

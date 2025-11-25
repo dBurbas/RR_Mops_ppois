@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+
 // TODO: Добавить документацию
 class StringFormatter
 {

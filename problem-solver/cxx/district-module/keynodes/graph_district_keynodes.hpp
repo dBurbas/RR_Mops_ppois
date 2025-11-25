@@ -6,8 +6,9 @@ public:
   static inline ScKeynode const action_construct_an_undirected_transport_graph{
       "action_construct_an_undirected_transport_graph",
       ScType::ConstNodeClass};
-  static inline ScKeynode const action_ready_to_analyze_city_routes{
-      "action_ready_to_analyze_city_routes",
+  static inline ScKeynode const action_check_connectivity{"action_check_connectivity", ScType::ConstNodeClass};
+  static inline ScKeynode const concept_ready_to_analyze_city_routes{
+      "concept_ready_to_analyze_city_routes",
       ScType::ConstNodeClass};
   static inline ScKeynode const nrel_file_path{"nrel_file_path", ScType::ConstNodeNonRole};
   static inline ScKeynode const nrel_road{"nrel_road", ScType::ConstNodeNonRole};
