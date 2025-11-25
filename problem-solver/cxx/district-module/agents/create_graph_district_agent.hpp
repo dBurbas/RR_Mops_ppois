@@ -7,7 +7,9 @@ class CreateGraphAgent : public ScActionInitiatedAgent
 public:
   CreateGraphAgent();
   ScAddr GetActionClass() const override;
-  void GetDistrict(ScAddr & district_nodestd, std::string const & nameOfDistrict, int & number_of_districts);
+  void GetDistrict(ScAddr & districtNode, std::string const & nameOfDistrict, int & numberOfDistricts);
+  void GetTypeOfRoute(ScAddr & typeOfRoute, std::string const & nameOfRoute, ScStructure const & route);
+  void GenerateRoutes(std::vector<std::string> const & resOfSplit, ScStructure & city);
   ScResult DoProgram(ScActionInitiatedEvent const & event, ScAction & action) override;
 
 private:
