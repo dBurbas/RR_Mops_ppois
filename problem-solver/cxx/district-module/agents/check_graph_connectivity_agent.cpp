@@ -54,7 +54,7 @@ ScAddrUnorderedSet CheckConnectivityAgent::GetDistricts(ScAddr const & city)
     {
       ScAddr const & district = itRoutes->Get(2);
       std::string const & nameDistrict = m_context.GetElementSystemIdentifier(district);
-      if (nameDistrict.find("district_") != std::string::npos)
+      if (nameDistrict.find(BASE_NAME_OF_NODES) != std::string::npos)
       {
         districts.insert(district);
       }
