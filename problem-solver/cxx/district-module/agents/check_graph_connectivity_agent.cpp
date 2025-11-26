@@ -65,12 +65,15 @@ ScAddrUnorderedSet CheckConnectivityAgent::GetDistricts(ScAddr const & city)
   return districts;
 }
 
-void CheckConnectivityAgent::DFSOperations(ScAddrUnorderedSet & districts, ScAddrUnorderedSet & visitedDistricts)
+int CheckConnectivityAgent::DFSOperations(
+    ScAddrUnorderedSet & districts,
+    ScAddr const & startDistrict,
+    ScAddrUnorderedSet & visitedDistricts)
 {
   ScAddrStack stack;
-  ScAddr startDistrict = *districts.begin();
   stack.push(startDistrict);
   visitedDistricts.insert(startDistrict);
+  int countElComponent = 1;
   m_logger.Info("We start dfs");
   while (!stack.empty())
   {
@@ -88,10 +91,12 @@ void CheckConnectivityAgent::DFSOperations(ScAddrUnorderedSet & districts, ScAdd
       {
         stack.push(neighDistrict);
         visitedDistricts.insert(neighDistrict);
+        countElComponent += 1;
       }
     }
   }
   m_logger.Info("We finish dfs");
+  return countElComponent;
 }
 
 std::string CheckConnectivityAgent::GetResultAnswer(ScAddrUnorderedSet const & resDistricts)
@@ -121,11 +126,23 @@ ScResult CheckConnectivityAgent::DoProgram(ConnectivityEvent const & event, ScAc
   ScAddr const & city = event.GetArcTargetElement();
   ScAddrUnorderedSet districts = GetDistricts(city);
   ScAddrUnorderedSet visitedDistricts;
-
-  DFSOperations(districts, visitedDistricts);
+  ScAddrUnorderedSet resDistricts;
 
   m_logger.Info("Check what districts are stay alone");
-  ScAddrUnorderedSet resDistricts = OperationsWithUnorderedSet::FindElemNotInIntersection(districts, visitedDistricts);
+  for (auto const & districtIt : districts)
+  {
+    // m_logger.Debug(m_context.GetElementSystemIdentifier(districtIt));
+    auto checkDistrict = visitedDistricts.find(districtIt);
+    if (checkDistrict == visitedDistricts.end())
+    {
+      int resultOfDfs = DFSOperations(districts, districtIt, visitedDistricts);
+      if (resultOfDfs == 1)
+      {
+        // m_logger.Debug(m_context.GetElementSystemIdentifier(districtIt));
+        resDistricts.insert(districtIt);
+      }
+    }
+  }
   std::string resultAnswer = GetResultAnswer(resDistricts);
   m_logger.Info("Finish check what districts are stay alone");
 

@@ -12,7 +12,7 @@ public:
   ScTemplate GetInitiationConditionTemplate(ConnectivityEvent const & event) const override;
   ScAddr GetActionClass() const override;
   ScAddrUnorderedSet GetDistricts(ScAddr const & city);
-  void DFSOperations(ScAddrUnorderedSet & districts, ScAddrUnorderedSet & visited);
+  int DFSOperations(ScAddrUnorderedSet & districts, ScAddr const& startDistrict, ScAddrUnorderedSet & visited);
   std::string GetResultAnswer(ScAddrUnorderedSet const & resDistricts);
   ScResult DoProgram(ConnectivityEvent const & event, ScAction & action) override;
 };
