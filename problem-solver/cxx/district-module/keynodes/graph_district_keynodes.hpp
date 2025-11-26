@@ -7,6 +7,7 @@ public:
       "action_construct_an_undirected_transport_graph",
       ScType::ConstNodeClass};
   static inline ScKeynode const action_check_connectivity{"action_check_connectivity", ScType::ConstNodeClass};
+  static inline ScKeynode const action_find_shortest_ways{"action_find_shortest_ways", ScType::ConstNodeClass};
   static inline ScKeynode const concept_ready_to_analyze_city_routes{
       "concept_ready_to_analyze_city_routes",
       ScType::ConstNodeClass};
