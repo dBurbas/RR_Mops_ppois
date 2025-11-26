@@ -1,5 +1,7 @@
 #include "check_graph_connectivity_agent.hpp"
 #include "../keynodes/graph_district_keynodes.hpp"
+#include "../utils/utils.hpp"
+#include "../settings/settings.hpp"
 #include <string>
 #include <set>
 
@@ -26,11 +28,8 @@ ScAddr CheckConnectivityAgent::GetActionClass() const
   return GraphKeynodes::action_check_connectivity;
 }
 
-ScResult CheckConnectivityAgent::DoProgram(ConnectivityEvent const & event, ScAction & action)
+ScAddrUnorderedSet CheckConnectivityAgent::GetDistricts(ScAddr const & city)
 {
-  m_logger.Info("Agent start to check connectivity");
-  ScAddr const & city = event.GetArcTargetElement();
-
   m_logger.Info("Try to create iterator");
   ScIterator3Ptr const it3 = m_context.CreateIterator3(city, ScType::ConstPermPosArc, ScType::ConstNodeStructure);
   m_logger.Info("Success create iterator");
@@ -63,14 +62,12 @@ ScResult CheckConnectivityAgent::DoProgram(ConnectivityEvent const & event, ScAc
   }
   m_logger.Info("Successful adding all unique districts from all routes");
 
-  for (auto const & distr : districts)
-  {
-    std::string const & nameDistrict = m_context.GetElementSystemIdentifier(distr);
-    m_logger.Debug(nameDistrict);
-  }
+  return districts;
+}
 
+void CheckConnectivityAgent::DFSOperations(ScAddrUnorderedSet & districts, ScAddrUnorderedSet & visitedDistricts)
+{
   ScAddrStack stack;
-  ScAddrUnorderedSet visitedDistricts;
   ScAddr startDistrict = *districts.begin();
   stack.push(startDistrict);
   visitedDistricts.insert(startDistrict);
@@ -95,5 +92,54 @@ ScResult CheckConnectivityAgent::DoProgram(ConnectivityEvent const & event, ScAc
     }
   }
   m_logger.Info("We finish dfs");
+}
+
+std::string CheckConnectivityAgent::GetResultAnswer(ScAddrUnorderedSet const & resDistricts)
+{
+  std::string resultAnswer;
+  if (resDistricts.size() == 0)
+  {
+    resultAnswer = POSITIVE_ANSWER;
+  }
+  else
+  {
+    resultAnswer = NEGATIVE_ANSWER;
+    resultAnswer += "\n Список не достижимых вершин:\n";
+    for (auto const & notConnectedDistrict : resDistricts)
+    {
+      std::string mainIdent = m_context.GetElementSystemIdentifier(notConnectedDistrict);
+      resultAnswer += mainIdent;
+      resultAnswer += "\n";
+    }
+  }
+  return resultAnswer;
+}
+
+ScResult CheckConnectivityAgent::DoProgram(ConnectivityEvent const & event, ScAction & action)
+{
+  m_logger.Info("Agent start to check connectivity");
+  ScAddr const & city = event.GetArcTargetElement();
+  ScAddrUnorderedSet districts = GetDistricts(city);
+  ScAddrUnorderedSet visitedDistricts;
+
+  DFSOperations(districts, visitedDistricts);
+
+  m_logger.Info("Check what districts are stay alone");
+  ScAddrUnorderedSet resDistricts = OperationsWithUnorderedSet::FindElemNotInIntersection(districts, visitedDistricts);
+  std::string resultAnswer = GetResultAnswer(resDistricts);
+  m_logger.Info("Finish check what districts are stay alone");
+
+  m_logger.Info("Create and connect result link");
+  ScAddr const & linkResultConnectivity = m_context.GenerateLink(ScType::ConstNodeLink);
+  m_context.SetLinkContent(linkResultConnectivity, resultAnswer);
+  ScAddr const & resArcOfConnectivity =
+      m_context.GenerateConnector(ScType::ConstCommonArc, city, linkResultConnectivity);
+  m_logger.Info("Link was successful create and connect to city");
+
+  m_logger.Info("Try to create nrel result of connectivity");
+  ScAddr const & nameCityArcNrel = m_context.GenerateConnector(
+      ScType::ConstPermPosArc, GraphKeynodes::nrel_result_connectivity, resArcOfConnectivity);
+  m_logger.Info("Succesfully create nrel result of connectivity");
+
   return action.FinishSuccessfully();
 }
