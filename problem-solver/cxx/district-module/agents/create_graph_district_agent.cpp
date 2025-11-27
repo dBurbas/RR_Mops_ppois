@@ -1,6 +1,6 @@
 #include "create_graph_district_agent.hpp"
 #include <sc-memory/sc_memory_headers.hpp>
-#include "keynodes/graph_district_keynodes.hpp"
+#include "../keynodes/graph_district_keynodes.hpp"
 #include "../utils/string_formatter.hpp"
 #include "../settings/settings.hpp"
 #include <string>
