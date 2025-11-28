@@ -19,24 +19,29 @@ ScAddr CreateGraphAgent::GetActionClass() const
   return GraphKeynodes::action_construct_an_undirected_transport_graph;
 }
 
-int CreateGraphAgent::GetNumberOfCurrentSystemIdentifier(std::string const& baseName) 
+int CreateGraphAgent::GetNumberOfCurrentSystemIdentifier(std::string const & baseName)
 {
-    int left = 0;
-    int right = MAX_COUNT_OF_NODES;
-    
-    while (left < right) {
-        int mid = left + (right - left) / 2;
-        if (m_context.SearchElementBySystemIdentifier(baseName + std::to_string(mid)).IsValid()) {
-            left = mid + 1;
-        } else {
-            right = mid;
-        }
+  int left = 0;
+  int right = MAX_COUNT_OF_NODES;
+
+  while (left < right)
+  {
+    int mid = left + (right - left) / 2;
+    if (m_context.SearchElementBySystemIdentifier(baseName + std::to_string(mid)).IsValid())
+    {
+      left = mid + 1;
     }
-    if (left >= MAX_COUNT_OF_NODES) {
-        return 0;
+    else
+    {
+      right = mid;
     }
-    
-    return left;
+  }
+  if (left >= MAX_COUNT_OF_NODES)
+  {
+    return 0;
+  }
+
+  return left;
 }
 
 void CreateGraphAgent::GetDistrict(ScAddr & districtNode, std::string const & nameOfDistrict)

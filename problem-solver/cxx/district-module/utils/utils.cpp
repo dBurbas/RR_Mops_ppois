@@ -27,26 +27,26 @@ int OperationsWithMap::GetNumber(std::map<std::string, int> const & map_1, std::
   return it->second;
 }
 
-std::string ContentGraph::GetResultAnswer(std::vector<std::vector<std::string>> const & resComponents)
-{
-  std::string resAnswer;
-  if (resComponents.size() == 1)
-  {
-    resAnswer = POSITIVE_ANSWER;
-  }
-  else
-  {
-    resAnswer = NEGATIVE_ANSWER;
-    for (int i = 0; i < resComponents.size(); i++)
-    {
-      auto header = "Компонента " + std::to_string(i + 1) + ":\n";
-      resAnswer += header;
-      for (auto const & distr : resComponents[i])
-      {
-        auto el = distr + "\n";
-        resAnswer += el;
-      }
-    }
-  }
-  return resAnswer;
-}
+// std::string ContentGraph::GetResultAnswer(std::vector<std::vector<std::string>> const & resComponents)
+// {
+//   std::string resAnswer;
+//   if (resComponents.size() == 1)
+//   {
+//     resAnswer = POSITIVE_ANSWER;
+//   }
+//   else
+//   {
+//     resAnswer = NEGATIVE_ANSWER;
+//     for (int i = 0; i < resComponents.size(); i++)
+//     {
+//       auto header = "Компонента " + std::to_string(i + 1) + ":\n";
+//       resAnswer += header;
+//       for (auto const & distr : resComponents[i])
+//       {
+//         auto el = distr + "\n";
+//         resAnswer += el;
+//       }
+//     }
+//   }
+//   return resAnswer;
+// }

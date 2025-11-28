@@ -47,12 +47,6 @@ int CheckConnectivityAgent::GetCountOfEdges(ScAddr const & el)
     count++;
   }
 
-  // ScIterator3Ptr it2 = m_context.CreateIterator3(ScType::ConstNode, ScType::ConstCommonEdge, el);
-  // while (it2->Next())
-  // {
-  //   count++;
-  // }
-
   return count;
 }
 
@@ -75,17 +69,6 @@ ScAddr CheckConnectivityAgent::GetElementByIterator(ScAddr const & el, int index
     }
     count++;
   }
-
-  // ScIterator3Ptr it2 = m_context.CreateIterator3(ScType::ConstNode, ScType::ConstCommonEdge, el);
-  // while (it2->Next())
-  // {
-  //   if (count == index)
-  //   {
-  //     ScAddr result = it2->Get(0);
-  //     return result.IsValid() ? result : ScAddr();
-  //   }
-  //   count++;
-  // }
 
   return ScAddr();
 }
@@ -179,7 +162,8 @@ ScAddrUnorderedSet CheckConnectivityAgent::DFSConnection(
 
 void CheckConnectivityAgent::DFSBridges(
     ScAddrUnorderedSet & districts,
-    std::vector<std::pair<std::string, std::string>> & bridges)
+    std::vector<std::pair<std::string, std::string>> & bridges,
+    std::vector<std::pair<ScAddr, ScAddr>> & bridgesAddr)
 {
   m_logger.Debug("DFSBridges start");
   ScAddrUnorderedSet visitedDistricts;
@@ -264,6 +248,9 @@ void CheckConnectivityAgent::DFSBridges(
           if (low[currName] > tin[parentName])
           {
             bridges.push_back({parentName, currName});
+            auto parentNode = m_context.SearchElementBySystemIdentifier(parentName);
+            auto currentNode = m_context.SearchElementBySystemIdentifier(currName);
+            bridgesAddr.push_back({parentNode, currentNode});
             m_logger.Debug("Found bridge: " + parentName + " - " + currName);
           }
         }
@@ -274,7 +261,7 @@ void CheckConnectivityAgent::DFSBridges(
 }
 
 void CheckConnectivityAgent::GetResultOfConnectivity(
-    std::vector<std::vector<std::string>> & resComponents,
+    std::vector<ScAddrUnorderedSet> & resComponents,
     ScAddrUnorderedSet & districts,
     ScAddrUnorderedSet & visitedDistricts)
 {
@@ -284,75 +271,98 @@ void CheckConnectivityAgent::GetResultOfConnectivity(
     if (checkDistrict == visitedDistricts.end())
     {
       auto resultOfDfs = DFSConnection(districts, districtIt, visitedDistricts);
-      std::vector<std::string> nameDistricts;
-      for (auto const & distr : resultOfDfs)
-      {
-        std::string const & nameDistr = m_context.GetElementSystemIdentifier(distr);
-        nameDistricts.push_back(nameDistr);
-      }
-      resComponents.push_back(nameDistricts);
+      resComponents.push_back(resultOfDfs);
     }
+  }
+}
+
+void CheckConnectivityAgent::DefineTypeOfGraph(
+    std::vector<ScAddrUnorderedSet> & resComponents,
+    ScAddr & city,
+    ScAddrUnorderedSet & resDistricts)
+{
+  if (resDistricts.size() == 1)
+  {
+    m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_connect_graph, city);
+  }
+  else
+  {
+    m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_noconnect_graph, city);
+  }
+}
+
+void CheckConnectivityAgent::GetComponents(std::vector<ScAddrUnorderedSet> & resComponents, ScAddr & city)
+{
+  for (auto const & listDistr : resComponents)
+  {
+    ScStructure component = m_context.GenerateStructure();
+    ScAddrUnorderedSet listRoads;
+    for (auto const & distr : listDistr)
+    {
+      ScIterator3Ptr const it = m_context.CreateIterator3(distr, ScType::ConstCommonEdge, ScType::ConstNode);
+      while (it->Next())
+      {
+        auto road = it->Get(1);
+        auto checkEdge = listRoads.find(road);
+        if (checkEdge == listRoads.end())
+        {
+          component << road << distr;
+          listRoads.insert(road);
+        }
+      }
+    }
+    auto componentConnector = m_context.GenerateConnector(ScType::ConstCommonArc, city, component);
+    auto nrelConnectivityComponent = m_context.GenerateConnector(
+        ScType::ConstPermPosArc, GraphKeynodes::nrel_connectivity_component, componentConnector);
+  }
+}
+
+void CheckConnectivityAgent::GetBridges(std::vector<std::pair<ScAddr, ScAddr>> & bridgesAddr)
+{
+  for (int i = 0; i < bridgesAddr.size(); i++)
+  {
+    auto const & route = bridgesAddr[i];
+    ScStructure bridge = m_context.GenerateStructure();
+    ScIterator3Ptr const it = m_context.CreateIterator3(route.first, ScType::ConstCommonEdge, route.second);
+    it->Next();
+    bridge << route.first << it->Get(1) << route.second;
+    ScAddr const & arcBridge =
+        m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_bridge, bridge);
   }
 }
 
 ScResult CheckConnectivityAgent::DoProgram(ConnectivityEvent const & event, ScAction & action)
 {
   m_logger.Info("Agent start to check connectivity");
-  ScAddr const & city = event.GetArcTargetElement();
+  ScAddr city = event.GetArcTargetElement();
   ScAddrUnorderedSet districts = GetDistricts(city);
   ScAddrUnorderedSet visitedDistricts;
   ScAddrUnorderedSet resDistricts;
-  std::vector<std::vector<std::string>> resComponents;
+  std::vector<ScAddrUnorderedSet> resComponents;
 
   m_logger.Info("Check what districts are stay alone");
   GetResultOfConnectivity(resComponents, districts, visitedDistricts);
   m_logger.Info("Finish checking what districts are stay alone");
 
-  m_logger.Info("Generate link and set answer");
-  ScAddr const & linkResultConnectivity = m_context.GenerateLink(ScType::ConstNodeLink);
-  auto const & resAnswer = ContentGraph::GetResultAnswer(resComponents);
-  m_context.SetLinkContent(linkResultConnectivity, resAnswer);
-  m_logger.Info("Successfull generate link and set answer");
+  m_logger.Info("Try to define type of graph");
+  DefineTypeOfGraph(resComponents, city, resDistricts);
+  m_logger.Info("Type of graph is successfully defined");
 
-  m_logger.Info("Finish checking components");
-  ScAddr const & resArcOfConnectivity =
-      m_context.GenerateConnector(ScType::ConstCommonArc, city, linkResultConnectivity);
-  m_logger.Info("Link was successful create and connect to city");
+  m_logger.Info("Start finding connectivity result");
+  GetComponents(resComponents, city);
+  m_logger.Info("Finish finding connectivity result");
 
-  m_logger.Info("Try to create nrel result of connectivity");
-  ScAddr const & nameCityArcNrelConnectivity = m_context.GenerateConnector(
-      ScType::ConstPermPosArc, GraphKeynodes::nrel_result_connectivity, resArcOfConnectivity);
-  m_logger.Info("Succesfully create nrel result of connectivity");
-
+  m_logger.Info("Try to find bridge");
   std::vector<std::pair<std::string, std::string>> bridges;
+  std::vector<std::pair<ScAddr, ScAddr>> bridgesAddr;
   std::string resultAnswerBridge;
-  DFSBridges(districts, bridges);
-  ScAddr const & linkResultBridges = m_context.GenerateLink(ScType::ConstNodeLink);
-  if (bridges.empty())
-  {
-    resultAnswerBridge = NEGATIVE_BRIDGE_ANSWER;
-  }
-  else
-  {
-    m_logger.Debug(std::to_string(bridges.size()));
-    for (int i = 0; i < bridges.size(); i++)
-    {
-      auto it = bridges[i];
-      auto const & firstDistrict = GetMainIndentifier(it.first);
-      auto const & secondDistrict = GetMainIndentifier(it.second);
-      resultAnswerBridge += firstDistrict;
-      resultAnswerBridge += " ======= ";
-      resultAnswerBridge += secondDistrict;
-      resultAnswerBridge += "\n";
-    }
-  }
-  m_context.SetLinkContent(linkResultBridges, resultAnswerBridge);
 
-  ScAddr const & resArcOfBridges = m_context.GenerateConnector(ScType::ConstCommonArc, city, linkResultBridges);
+  m_logger.Info("DFSBridges start working");
+  DFSBridges(districts, bridges, bridgesAddr);
+  m_logger.Info("DFSBridges finish working");
 
-  ScAddr const & nameCityArcNrelBridge =
-      m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::nrel_result_bridges, resArcOfBridges);
-  m_logger.Info("All is correct");
-
+  m_logger.Info("DFSBridges start searching bridges");
+  GetBridges(bridgesAddr);
+  m_logger.Info("DFSBridges finish searching bridges");
   return action.FinishSuccessfully();
 }

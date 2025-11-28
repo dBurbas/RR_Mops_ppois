@@ -18,8 +18,8 @@ public:
   static int GetNumber(std::map<std::string, int> const & map_1, std::string const & str);
 };
 
-class ContentGraph
-{
-public:
-  static std::string GetResultAnswer(std::vector<std::vector<std::string>> const & resComponents);
-};
+// class ContentGraph
+// {
+// public:
+//   static std::string GetResultAnswer(std::vector<std::vector<std::string>> const & resComponents);
+// };

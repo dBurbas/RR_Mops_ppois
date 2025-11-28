@@ -17,18 +17,19 @@ public:
       ScAddrUnorderedSet & districts,
       ScAddr const & startDistrict,
       ScAddrUnorderedSet & visitedDistricts);
-  //   void DFSBridgesRecursive(
-  //       ScAddr district,
-  //       ScAddr parentDistrict,
-  //       ScAddrUnorderedSet & visitedDistricts,
-  //       std::map<std::string, int> & tin,
-  //       std::map<std::string, int> & low,
-  //       int & timer,
-  //       std::vector<std::pair<std::string, std::string>> & bridges);
-  void DFSBridges(ScAddrUnorderedSet & districts, std::vector<std::pair<std::string, std::string>> & bridges);
+  void DFSBridges(
+      ScAddrUnorderedSet & districts,
+      std::vector<std::pair<std::string, std::string>> & bridges,
+      std::vector<std::pair<ScAddr, ScAddr>> & bridgesAddr);
+  void DefineTypeOfGraph(
+      std::vector<ScAddrUnorderedSet> & resComponents,
+      ScAddr & city,
+      ScAddrUnorderedSet & resDistricts);
   void GetResultOfConnectivity(
-      std::vector<std::vector<std::string>> & resComponents,
+      std::vector<ScAddrUnorderedSet> & resComponents,
       ScAddrUnorderedSet & districts,
       ScAddrUnorderedSet & visitedDistricts);
+  void GetComponents(std::vector<ScAddrUnorderedSet> & resComponents, ScAddr & city);
+  void GetBridges(std::vector<std::pair<ScAddr, ScAddr>> & bridgesAddr);
   ScResult DoProgram(ConnectivityEvent const & event, ScAction & action) override;
 };

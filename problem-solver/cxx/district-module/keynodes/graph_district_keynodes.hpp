@@ -17,7 +17,11 @@ public:
   static inline ScKeynode const nrel_road{"nrel_road", ScType::ConstNodeNonRole};
   static inline ScKeynode const nrel_name{"nrel_name", ScType::ConstNodeNonRole};
   static inline ScKeynode const nrel_number{"nrel_number", ScType::ConstNodeNonRole};
+  static inline ScKeynode const nrel_connectivity_component{"nrel_connectivity_component", ScType::ConstNodeNonRole};
   static inline ScKeynode const concept_bus_route{"concept_bus_route", ScType::ConstNodeClass};
   static inline ScKeynode const concept_tram_route{"concept_tram_route", ScType::ConstNodeClass};
   static inline ScKeynode const concept_subway_route{"concept_subway_route", ScType::ConstNodeClass};
+  static inline ScKeynode const concept_connect_graph{"concept_connect_graph", ScType::ConstNodeClass};
+  static inline ScKeynode const concept_noconnect_graph{"concept_noconnect_graph", ScType::ConstNodeClass};
+  static inline ScKeynode const concept_bridge{"concept_bridge", ScType::ConstNodeClass};
 };
