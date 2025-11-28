@@ -1,4 +1,4 @@
-#include "check_graph_connectivity_agent.hpp"
+#include "dfs_agent.hpp"
 #include "../keynodes/graph_district_keynodes.hpp"
 #include "../utils/utils.hpp"
 #include "../settings/settings.hpp"
@@ -12,8 +12,7 @@
 
 CheckConnectivityAgent::CheckConnectivityAgent()
 {
-  m_logger =
-      utils::ScLogger(utils::ScLogger::ScLogType::File, "logs/CheckConnectivityhAgent.log", utils::ScLogLevel::Debug);
+  m_logger = utils::ScLogger(utils::ScLogger::ScLogType::File, "logs/DFSAgent.log", utils::ScLogLevel::Debug);
 }
 
 ScAddr CheckConnectivityAgent::GetEventSubscriptionElement() const

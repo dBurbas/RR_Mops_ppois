@@ -1,10 +1,9 @@
-#include "find_shortest_ways_in_city_agent.hpp"
+#include "bfs_agent.hpp"
 #include "../keynodes/graph_district_keynodes.hpp"
 
 FindShortestWaysAgent::FindShortestWaysAgent()
 {
-  m_logger =
-      utils::ScLogger(utils::ScLogger::ScLogType::File, "logs/FindShortestWayshAgent.log", utils::ScLogLevel::Debug);
+  m_logger = utils::ScLogger(utils::ScLogger::ScLogType::File, "logs/BFSAgent.log", utils::ScLogLevel::Debug);
 }
 
 ScAddr FindShortestWaysAgent::GetEventSubscriptionElement() const

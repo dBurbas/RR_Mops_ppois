@@ -60,7 +60,7 @@ int StringOperationInSystemIdentifier::GetSystemIdentifier(std::string const & s
   return std::stoi(str.substr(underscore_symbol + 1));
 }
 
-std::string DividerNumberFromString::GetNumberOfRoute(std::string const & str)
+std::string DividerNumberFromString::GetNumberOfRouteOrDistrict(std::string const & str)
 {
   auto start_pos = str.size() - 1;
   while (start_pos >= 0 && isdigit(str[start_pos]))

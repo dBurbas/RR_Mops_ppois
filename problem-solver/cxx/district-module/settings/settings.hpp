@@ -6,3 +6,4 @@
 #define POSITIVE_ANSWER "Граф связный"
 #define NEGATIVE_ANSWER "Граф несвязный"
 #define NEGATIVE_BRIDGE_ANSWER "Нет мостов!"
+#define MAX_COUNT_OF_NODES 1000000
