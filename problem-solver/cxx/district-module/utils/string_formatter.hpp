@@ -21,5 +21,5 @@ public:
 class DividerNumberFromString
 {
 public:
-  static std::string GetNumberOfRoute(std::string const &);
+  static std::string GetNumberOfRouteOrDistrict(std::string const &);
 };

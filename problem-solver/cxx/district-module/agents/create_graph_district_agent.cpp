@@ -19,12 +19,33 @@ ScAddr CreateGraphAgent::GetActionClass() const
   return GraphKeynodes::action_construct_an_undirected_transport_graph;
 }
 
-void CreateGraphAgent::GetDistrict(ScAddr & districtNode, std::string const & nameOfDistrict, int & numberOfDistricts)
+int CreateGraphAgent::GetNumberOfCurrentSystemIdentifier(std::string const& baseName) 
+{
+    int left = 0;
+    int right = MAX_COUNT_OF_NODES;
+    
+    while (left < right) {
+        int mid = left + (right - left) / 2;
+        if (m_context.SearchElementBySystemIdentifier(baseName + std::to_string(mid)).IsValid()) {
+            left = mid + 1;
+        } else {
+            right = mid;
+        }
+    }
+    if (left >= MAX_COUNT_OF_NODES) {
+        return 0;
+    }
+    
+    return left;
+}
+
+void CreateGraphAgent::GetDistrict(ScAddr & districtNode, std::string const & nameOfDistrict)
 {
   auto district = this->translateMap_.find(nameOfDistrict);
   if (district == this->translateMap_.end())
   {
-    std::string const & resultSystemIdentifier = BASE_NAME_OF_NODES + std::to_string(numberOfDistricts);
+    std::string const & resultSystemIdentifier =
+        BASE_NAME_OF_NODES + std::to_string(GetNumberOfCurrentSystemIdentifier(BASE_NAME_OF_NODES));
     districtNode = m_context.GenerateNode(ScType::ConstNode);
     m_context.SetElementSystemIdentifier(resultSystemIdentifier, districtNode);
 
@@ -37,7 +58,6 @@ void CreateGraphAgent::GetDistrict(ScAddr & districtNode, std::string const & na
 
     // this->districts_.push_back(districtNode);
     this->translateMap_[nameOfDistrict] = resultSystemIdentifier;
-    numberOfDistricts++;
   }
   else
   {
@@ -83,7 +103,7 @@ void CreateGraphAgent::GenerateRoutes(std::vector<std::string> const & resOfSpli
     m_logger.Debug("Start district try to create");
     try
     {
-      GetDistrict(startDistrictNode, startDistrict, numberOfDistricts);
+      GetDistrict(startDistrictNode, startDistrict);
     }
     catch (std::logic_error const & e)
     {
@@ -94,7 +114,7 @@ void CreateGraphAgent::GenerateRoutes(std::vector<std::string> const & resOfSpli
     m_logger.Debug("End district try to create");
     try
     {
-      GetDistrict(endDistrictNode, endDistrict, numberOfDistricts);
+      GetDistrict(endDistrictNode, endDistrict);
     }
     catch (std::logic_error const & e)
     {
@@ -112,7 +132,8 @@ void CreateGraphAgent::GenerateRoutes(std::vector<std::string> const & resOfSpli
 
     m_logger.Debug("Try create structure");
     ScStructure route = m_context.GenerateStructure();
-    std::string const & nameRoute = BASE_NAME_OF_ROUTE + std::to_string(numberOfRoutes);
+    std::string const & nameRoute =
+        BASE_NAME_OF_ROUTE + std::to_string(GetNumberOfCurrentSystemIdentifier(BASE_NAME_OF_ROUTE));
     m_context.SetElementSystemIdentifier(nameRoute, route);
     numberOfRoutes++;
     route << startDistrictNode << endDistrictNode << road << nrelRoad;
@@ -125,7 +146,7 @@ void CreateGraphAgent::GenerateRoutes(std::vector<std::string> const & resOfSpli
 
     m_logger.Debug("Try create link number of route");
     ScAddr const & linkNumberOfRoute = m_context.GenerateLink(ScType::ConstNodeLink);
-    std::string numberOfRouteToDivide = DividerNumberFromString::GetNumberOfRoute(nameOfRoute);
+    std::string numberOfRouteToDivide = DividerNumberFromString::GetNumberOfRouteOrDistrict(nameOfRoute);
     m_context.SetLinkContent(linkNumberOfRoute, numberOfRouteToDivide);
     m_logger.Info("Create success link nubmer or route");
 
