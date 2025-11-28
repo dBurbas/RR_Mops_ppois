@@ -12,11 +12,20 @@ public:
   int GetCountOfEdges(ScAddr const & el);
   ScAddr GetElementByIterator(ScAddr const & el, int index);
   ScAddrUnorderedSet GetDistricts(ScAddr const & city);
+  std::string GetMainIndentifier(std::string const & district);
   ScAddrUnorderedSet DFSConnection(
       ScAddrUnorderedSet & districts,
       ScAddr const & startDistrict,
       ScAddrUnorderedSet & visitedDistricts);
-  void DFSBridges(ScAddrUnorderedSet & districts, std::map<std::string, std::string> & bridges);
+  //   void DFSBridgesRecursive(
+  //       ScAddr district,
+  //       ScAddr parentDistrict,
+  //       ScAddrUnorderedSet & visitedDistricts,
+  //       std::map<std::string, int> & tin,
+  //       std::map<std::string, int> & low,
+  //       int & timer,
+  //       std::vector<std::pair<std::string, std::string>> & bridges);
+  void DFSBridges(ScAddrUnorderedSet & districts, std::vector<std::pair<std::string, std::string>> & bridges);
   void GetResultOfConnectivity(
       std::vector<std::vector<std::string>> & resComponents,
       ScAddrUnorderedSet & districts,
