@@ -291,7 +291,10 @@ void CheckConnectivityAgent::DefineTypeOfGraph(
   }
 }
 
-void CheckConnectivityAgent::GetComponents(std::vector<ScAddrUnorderedSet> & resComponents, ScAddr & city)
+void CheckConnectivityAgent::GetComponents(
+    std::vector<ScAddrUnorderedSet> & resComponents,
+    ScAddr & city,
+    ScAddr & nodeTuple)
 {
   for (auto const & listDistr : resComponents)
   {
@@ -314,10 +317,17 @@ void CheckConnectivityAgent::GetComponents(std::vector<ScAddrUnorderedSet> & res
     auto componentConnector = m_context.GenerateConnector(ScType::ConstCommonArc, city, component);
     auto nrelConnectivityComponent = m_context.GenerateConnector(
         ScType::ConstPermPosArc, GraphKeynodes::nrel_connectivity_component, componentConnector);
+    m_logger.Info("Try to create graph");
+
+    m_logger.Info("Try to make component rrel subgraph");
+    auto connectorComponentGraph = m_context.GenerateConnector(ScType::ConstPermPosArc, nodeTuple, component);
+    auto rrelSubgraphComponent =
+    m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::rrel_subgraph, connectorComponentGraph);
+    m_logger.Info("Finish make component rrel subgraph");
   }
 }
 
-void CheckConnectivityAgent::GetBridges(std::vector<std::pair<ScAddr, ScAddr>> & bridgesAddr)
+void CheckConnectivityAgent::GetBridges(std::vector<std::pair<ScAddr, ScAddr>> & bridgesAddr, ScAddr & nodeTuple)
 {
   for (int i = 0; i < bridgesAddr.size(); i++)
   {
@@ -326,8 +336,9 @@ void CheckConnectivityAgent::GetBridges(std::vector<std::pair<ScAddr, ScAddr>> &
     ScIterator3Ptr const it = m_context.CreateIterator3(route.first, ScType::ConstCommonEdge, route.second);
     it->Next();
     bridge << route.first << it->Get(1) << route.second;
-    ScAddr const & arcBridge =
-        m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_bridge, bridge);
+    ScAddr const & arcBridge = m_context.GenerateConnector(ScType::ConstPermPosArc, nodeTuple, bridge);
+    ScAddr const & connectorRrelBridge =
+        m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::rrel_bridge, arcBridge);
   }
 }
 
@@ -339,6 +350,18 @@ ScResult CheckConnectivityAgent::DoProgram(ConnectivityEvent const & event, ScAc
   ScAddrUnorderedSet visitedDistricts;
   ScAddrUnorderedSet resDistricts;
   std::vector<ScAddrUnorderedSet> resComponents;
+  ScAddr nodeTuple = m_context.GenerateNode(ScType::ConstNodeTuple);
+
+  m_logger.Info("Try to connect nrel_bridge to node_tuple");
+  ScAddr const & arcNrelBridge =
+      m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::nrel_bridge, nodeTuple);
+  m_logger.Info("Finish connect nrel_bridge to node_tuple");
+
+  m_logger.Info("Try to make city rrel graph");
+  auto connectorCityGraph = m_context.GenerateConnector(ScType::ConstPermPosArc, nodeTuple, city);
+  auto rrelGraphCity =
+      m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::rrel_graph, connectorCityGraph);
+  m_logger.Info("Finish make city rrel graph");
 
   m_logger.Info("Check what districts are stay alone");
   GetResultOfConnectivity(resComponents, districts, visitedDistricts);
@@ -349,7 +372,7 @@ ScResult CheckConnectivityAgent::DoProgram(ConnectivityEvent const & event, ScAc
   m_logger.Info("Type of graph is successfully defined");
 
   m_logger.Info("Start finding connectivity result");
-  GetComponents(resComponents, city);
+  GetComponents(resComponents, city, nodeTuple);
   m_logger.Info("Finish finding connectivity result");
 
   m_logger.Info("Try to find bridge");
@@ -362,7 +385,7 @@ ScResult CheckConnectivityAgent::DoProgram(ConnectivityEvent const & event, ScAc
   m_logger.Info("DFSBridges finish working");
 
   m_logger.Info("DFSBridges start searching bridges");
-  GetBridges(bridgesAddr);
+  GetBridges(bridgesAddr, nodeTuple);
   m_logger.Info("DFSBridges finish searching bridges");
   return action.FinishSuccessfully();
 }

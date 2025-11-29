@@ -29,7 +29,7 @@ public:
       std::vector<ScAddrUnorderedSet> & resComponents,
       ScAddrUnorderedSet & districts,
       ScAddrUnorderedSet & visitedDistricts);
-  void GetComponents(std::vector<ScAddrUnorderedSet> & resComponents, ScAddr & city);
-  void GetBridges(std::vector<std::pair<ScAddr, ScAddr>> & bridgesAddr);
+  void GetComponents(std::vector<ScAddrUnorderedSet> & resComponents, ScAddr & city, ScAddr & nodeTuple);
+  void GetBridges(std::vector<std::pair<ScAddr, ScAddr>> & bridgesAddr, ScAddr & nodeTuple);
   ScResult DoProgram(ConnectivityEvent const & event, ScAction & action) override;
 };
