@@ -19,3 +19,5 @@ __pycache__
 
 ConanPresets.json
 .venv
+
+.DS_Store
