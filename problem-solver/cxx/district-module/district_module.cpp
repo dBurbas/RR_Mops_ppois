@@ -5,5 +5,5 @@
 
 SC_MODULE_REGISTER(DistrictModule)
     ->Agent<CreateGraphAgent>()
-    ->Agent<CheckConnectivityAgent>()
-    ->Agent<FindShortestWaysAgent>();
+    ->Agent<TransportNetDFSAgent>()
+    ->Agent<TransportNetBFSEvent>();

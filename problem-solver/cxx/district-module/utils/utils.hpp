@@ -15,7 +15,8 @@ public:
 class OperationsWithMap
 {
 public:
-  static int GetNumber(std::map<std::string, int> const & map_1, std::string const & str);
+  static int GetNumberMin(std::map<std::string, int> const & map_1, std::string const & str);
+  static int GetNumberMax(std::map<std::string, int> const & map_1, std::string const & str);
 };
 
 // class ContentGraph
