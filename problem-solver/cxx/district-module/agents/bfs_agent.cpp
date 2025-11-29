@@ -8,29 +8,29 @@
 #include <string>
 #include <unordered_set>
 
-TransportNetBFSEvent::TransportNetBFSEvent()
+TransportNetBFSAgent::TransportNetBFSAgent()
 {
   m_logger = utils::ScLogger(utils::ScLogger::ScLogType::File, "logs/BFSAgent.log", utils::ScLogLevel::Debug);
 }
 
-ScAddr TransportNetBFSEvent::GetEventSubscriptionElement() const
+ScAddr TransportNetBFSAgent::GetEventSubscriptionElement() const
 {
   return GraphKeynodes::concept_ready_to_analyze_city_routes;
 }
 
-ScTemplate TransportNetBFSEvent::GetInitiationConditionTemplate(WaysEvent const & event) const
+ScTemplate TransportNetBFSAgent::GetInitiationConditionTemplate(TransportNetBFSEvent const & event) const
 {
   ScTemplate templ;
   templ.Triple(GraphKeynodes::concept_ready_to_analyze_city_routes, ScType::VarPermPosArc, ScType::VarNode);
   return templ;
 }
 
-ScAddr TransportNetBFSEvent::GetActionClass() const
+ScAddr TransportNetBFSAgent::GetActionClass() const
 {
   return GraphKeynodes::action_transport_net_bfs;
 }
 
-ScAddrUnorderedSet TransportNetBFSEvent::GetDistricts(ScAddr const & city)
+ScAddrUnorderedSet TransportNetBFSAgent::GetDistricts(ScAddr const & city)
 {
   m_logger.Info("Try to create iterator");
   ScIterator3Ptr const it3 = m_context.CreateIterator3(city, ScType::ConstPermPosArc, ScType::ConstNodeStructure);
@@ -67,7 +67,7 @@ ScAddrUnorderedSet TransportNetBFSEvent::GetDistricts(ScAddr const & city)
   return districts;
 }
 
-void TransportNetBFSEvent::FindShortestWays(
+void TransportNetBFSAgent::FindShortestWays(
     ScAddrUnorderedSet const & districts,
     ScAddr const & startVertex,
     std::map<std::string, int> & resDists)
@@ -109,7 +109,7 @@ void TransportNetBFSEvent::FindShortestWays(
   }
 }
 
-void TransportNetBFSEvent::SearchShortestWaysInCity(ScAddrUnorderedSet const & districts, ScAddr & city)
+void TransportNetBFSAgent::SearchShortestWaysInCity(ScAddrUnorderedSet const & districts, ScAddr & city)
 {
   ScStructure shortestDists = m_context.GenerateStructure();
   std::vector<std::pair<std::string, std::string>> createdPairs;
@@ -154,7 +154,7 @@ void TransportNetBFSEvent::SearchShortestWaysInCity(ScAddrUnorderedSet const & d
   }
 }
 
-ScResult TransportNetBFSEvent::DoProgram(WaysEvent const & event, ScAction & action)
+ScResult TransportNetBFSAgent::DoProgram(TransportNetBFSEvent const & event, ScAction & action)
 {
   m_logger.Info("Agent start finding shortest ways");
   ScAddr city = event.GetArcTargetElement();

@@ -30,6 +30,6 @@ public:
       ScAddrUnorderedSet & districts,
       ScAddrUnorderedSet & visitedDistricts);
   void GetComponents(std::vector<ScAddrUnorderedSet> & resComponents, ScAddr & city, ScAddr & nodeTuple);
-  void GetBridges(std::vector<std::pair<ScAddr, ScAddr>> & bridgesAddr, ScAddr & nodeTuple);
+  void GetBridges(std::vector<std::pair<ScAddr, ScAddr>> & bridgesAddr, ScAddr & nodeTuple, ScAddr & city);
   ScResult DoProgram(ConnectivityEvent const & event, ScAction & action) override;
 };

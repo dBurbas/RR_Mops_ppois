@@ -3,14 +3,14 @@
 #include <sc-memory/sc_agent.hpp>
 #include <sc-memory/sc_agent.hpp>
 
-using WaysEvent = ScEventAfterGenerateOutgoingArc<ScType::ConstPermPosArc>;
+using TransportNetBFSEvent = ScEventAfterGenerateOutgoingArc<ScType::ConstPermPosArc>;
 
-class TransportNetBFSEvent : public ScAgent<WaysEvent>
+class TransportNetBFSAgent : public ScAgent<TransportNetBFSEvent>
 {
 public:
-  TransportNetBFSEvent();
+  TransportNetBFSAgent();
   ScAddr GetEventSubscriptionElement() const override;
-  ScTemplate GetInitiationConditionTemplate(WaysEvent const & event) const override;
+  ScTemplate GetInitiationConditionTemplate(TransportNetBFSEvent const & event) const override;
   ScAddr GetActionClass() const override;
   ScAddrUnorderedSet GetDistricts(ScAddr const & city);
   void FindShortestWays(
@@ -18,5 +18,5 @@ public:
       ScAddr const & startVertex,
       std::map<std::string, int> & resDists);
   void SearchShortestWaysInCity(ScAddrUnorderedSet const & districts, ScAddr & city);
-  ScResult DoProgram(WaysEvent const & event, ScAction & action) override;
+  ScResult DoProgram(TransportNetBFSEvent const & event, ScAction & action) override;
 };

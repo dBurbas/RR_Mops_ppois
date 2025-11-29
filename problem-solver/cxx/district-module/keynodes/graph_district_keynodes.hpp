@@ -31,5 +31,6 @@ public:
   static inline ScKeynode const concept_connect_graph{"concept_connect_graph", ScType::ConstNodeClass};
   static inline ScKeynode const concept_noconnect_graph{"concept_noconnect_graph", ScType::ConstNodeClass};
   static inline ScKeynode const concept_shortest_way{"concept_shortest_way", ScType::ConstNodeClass};
+  // static inline ScKeynode const concept_route{"concept_route", ScType::ConstNodeClass};
   // static inline ScKeynode const concept_bridge{"concept_bridge", ScType::ConstNodeClass};
 };

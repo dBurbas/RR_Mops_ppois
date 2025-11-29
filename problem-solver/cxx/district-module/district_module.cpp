@@ -6,4 +6,4 @@
 SC_MODULE_REGISTER(DistrictModule)
     ->Agent<CreateGraphAgent>()
     ->Agent<TransportNetDFSAgent>()
-    ->Agent<TransportNetBFSEvent>();
+    ->Agent<TransportNetBFSAgent>();

@@ -322,20 +322,34 @@ void TransportNetDFSAgent::GetComponents(
     m_logger.Info("Try to make component rrel subgraph");
     auto connectorComponentGraph = m_context.GenerateConnector(ScType::ConstPermPosArc, nodeTuple, component);
     auto rrelSubgraphComponent =
-    m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::rrel_subgraph, connectorComponentGraph);
+        m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::rrel_subgraph, connectorComponentGraph);
     m_logger.Info("Finish make component rrel subgraph");
   }
 }
 
-void TransportNetDFSAgent::GetBridges(std::vector<std::pair<ScAddr, ScAddr>> & bridgesAddr, ScAddr & nodeTuple)
+void TransportNetDFSAgent::GetBridges(
+    std::vector<std::pair<ScAddr, ScAddr>> & bridgesAddr,
+    ScAddr & nodeTuple,
+    ScAddr & city)
 {
   for (int i = 0; i < bridgesAddr.size(); i++)
   {
     auto const & route = bridgesAddr[i];
-    ScStructure bridge = m_context.GenerateStructure();
     ScIterator3Ptr const it = m_context.CreateIterator3(route.first, ScType::ConstCommonEdge, route.second);
     it->Next();
-    bridge << route.first << it->Get(1) << route.second;
+
+    ScIterator3Ptr const it2 =
+        m_context.CreateIterator3(ScType::ConstNodeStructure, ScType::ConstPermPosArc, it->Get(1));
+    ScAddr bridge;
+    while (it2->Next())
+    {
+      auto stIsTown = it2->Get(0);
+      ScIterator3Ptr const it3 = m_context.CreateIterator3(city, ScType::ConstPermPosArc, stIsTown);
+      if (it3->Next())
+      {
+        bridge = stIsTown;
+      }
+    }
     ScAddr const & arcBridge = m_context.GenerateConnector(ScType::ConstPermPosArc, nodeTuple, bridge);
     ScAddr const & connectorRrelBridge =
         m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::rrel_bridge, arcBridge);
@@ -385,7 +399,7 @@ ScResult TransportNetDFSAgent::DoProgram(ConnectivityEvent const & event, ScActi
   m_logger.Info("DFSBridges finish working");
 
   m_logger.Info("DFSBridges start searching bridges");
-  GetBridges(bridgesAddr, nodeTuple);
+  GetBridges(bridgesAddr, nodeTuple, city);
   m_logger.Info("DFSBridges finish searching bridges");
   return action.FinishSuccessfully();
 }
