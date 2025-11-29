@@ -19,24 +19,29 @@ ScAddr CreateGraphAgent::GetActionClass() const
   return GraphKeynodes::action_construct_an_undirected_transport_graph;
 }
 
-int CreateGraphAgent::GetNumberOfCurrentSystemIdentifier(std::string const& baseName) 
+int CreateGraphAgent::GetNumberOfCurrentSystemIdentifier(std::string const & baseName)
 {
-    int left = 0;
-    int right = MAX_COUNT_OF_NODES;
-    
-    while (left < right) {
-        int mid = left + (right - left) / 2;
-        if (m_context.SearchElementBySystemIdentifier(baseName + std::to_string(mid)).IsValid()) {
-            left = mid + 1;
-        } else {
-            right = mid;
-        }
+  int left = 0;
+  int right = MAX_COUNT_OF_NODES;
+
+  while (left < right)
+  {
+    int mid = left + (right - left) / 2;
+    if (m_context.SearchElementBySystemIdentifier(baseName + std::to_string(mid)).IsValid())
+    {
+      left = mid + 1;
     }
-    if (left >= MAX_COUNT_OF_NODES) {
-        return 0;
+    else
+    {
+      right = mid;
     }
-    
-    return left;
+  }
+  if (left >= MAX_COUNT_OF_NODES)
+  {
+    return 0;
+  }
+
+  return left;
 }
 
 void CreateGraphAgent::GetDistrict(ScAddr & districtNode, std::string const & nameOfDistrict)
@@ -206,6 +211,11 @@ ScResult CreateGraphAgent::DoProgram(ScActionInitiatedEvent const & event, ScAct
   ScAddr const & nameCityArcNrel =
       m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::nrel_name, nameCityArc);
   m_logger.Info("Succesfully create nrel city name");
+
+  m_logger.Debug("Try to add city to class of cities");
+  ScAddr const & CityPermArcClass =
+      m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_city, city);
+  m_logger.Info("Succesffuly add city to class of cities");
 
   m_logger.Debug("Try to create concept which make signalize that graph was built");
   ScAddr const & actionSuccessBuildGraph =
