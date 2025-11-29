@@ -29,19 +29,28 @@ ScAddr TransportNetBFSAgent::GetActionClass() const
 
 ScResult TransportNetBFSAgent::DoProgram(TransportNetBFSEvent const & event, ScAction & action)
 {
-  m_logger.Info("Agent start to calculate route web diameter");
+  m_logger.Info("Agent start to calculate route web diameter and central districts");
   ScIterator3Ptr const it3 =
       m_context.CreateIterator3(GraphKeynodes::concept_city, ScType::ConstPosArc, ScType::ConstNodeStructure);
   if (it3->Next())
   {
     ScAddr city = it3->Get(2);
-    CalculateCentralRegionAndDiameterBFS(city);
+    try
+    {
+      CalculateCentralRegionAndDiameterBFS(city);
+    }
+    catch (std::runtime_error const & e)
+    {
+      m_logger.Warning("Agent can't calculate diameter and central districts in non connect");
+      action.FinishUnsuccessfully();
+    }
   }
   else
   {
     m_logger.Error("No city");
     action.FinishUnsuccessfully();
   }
+  m_logger.Info("Agent calculated all good");
   return action.FinishSuccessfully();
 }
 
