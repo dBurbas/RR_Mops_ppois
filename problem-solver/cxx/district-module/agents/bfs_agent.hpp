@@ -15,6 +15,6 @@ public:
   ScAddr GetActionClass() const override;
   ScResult DoProgram(TransportNetBFSEvent const & event, ScAction & action) override;
   void CalculateCentralRegionAndDiameterBFS(ScAddr & city) const;
-  void BFSShortestPathsUtil(std::vector<int> & dist) const;
+  // void BFSShortestPathsUtil(std::vector<int> & dist) const;
   int CountCityDistricts() const;
 };
