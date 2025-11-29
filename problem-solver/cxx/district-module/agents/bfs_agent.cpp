@@ -115,7 +115,7 @@ void TransportNetBFSAgent::CalculateCentralRegionAndDiameterBFS(ScAddr & city) c
       {
         m_logger.Debug("Try add district in class of center districts");
         ScAddr const & arcCommonAddr =
-            m_context.GenerateConnector(ScType::ConstCommonArc, GraphKeynodes::concept_center_district, center);
+            m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_center_district, center);
       }
     }
   }
@@ -131,7 +131,7 @@ void TransportNetBFSAgent::CalculateCentralRegionAndDiameterBFS(ScAddr & city) c
   m_logger.Info("Success create connection between route and link");
 }
 
-void TransportNetBFSAgent::BFSShortestPathsUtil(std::vector<int> & dist) const {}
+// void TransportNetBFSAgent::BFSShortestPathsUtil(std::vector<int> & dist) const {}
 
 int TransportNetBFSAgent::CountCityDistricts() const
 {
