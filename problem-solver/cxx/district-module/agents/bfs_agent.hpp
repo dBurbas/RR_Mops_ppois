@@ -17,4 +17,10 @@ public:
   void CalculateCentralRegionAndDiameterBFS(ScAddr & city) const;
   // void BFSShortestPathsUtil(std::vector<int> & dist) const;
   int CountCityDistricts() const;
+  ScAddrUnorderedSet GetDistricts(ScAddr const & city);
+  void FindShortestWays(
+      ScAddrUnorderedSet const & districts,
+      ScAddr const & startVertex,
+      std::map<std::string, int> & resDists);
+  void SearchShortestWaysInCity(ScAddrUnorderedSet const & districts, ScAddr & city);
 };

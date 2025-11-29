@@ -5,5 +5,5 @@
 #include "agents/bfs_agent.hpp"
 SC_MODULE_REGISTER(DistrictModule)
     ->Agent<CreateGraphAgent>()
-    ->Agent<CheckConnectivityAgent>()
+    ->Agent<TransportNetDFSAgent>()
     ->Agent<TransportNetBFSAgent>();
