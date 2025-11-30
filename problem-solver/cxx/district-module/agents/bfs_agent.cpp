@@ -186,9 +186,9 @@ void TransportNetBFSAgent::SearchShortestWaysInCity(ScAddrUnorderedSet const & d
           m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::nrel_length_way, connectorLinkStruct);
       auto connectorClassShortestWay =
           m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_shortest_way, way);
-      auto connectorCity = m_context.GenerateConnector(ScType::ConstPermPosArc, city, way);
+      auto connectorCity = m_context.GenerateConnector(ScType::ConstCommonArc, city, way);
       auto connectorRrelShortWay =
-          m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::rrel_shortest_way, connectorCity);
+          m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::nrel_shortest_way, connectorCity);
     }
   }
   m_logger.Info("Finish finding shortest ways in city");

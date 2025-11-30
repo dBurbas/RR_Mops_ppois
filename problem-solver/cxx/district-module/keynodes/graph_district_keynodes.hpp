@@ -23,9 +23,9 @@ public:
   static inline ScKeynode const nrel_road{"nrel_road", ScType::ConstNodeNonRole};
   static inline ScKeynode const nrel_name{"nrel_name", ScType::ConstNodeNonRole};
   static inline ScKeynode const nrel_bridge{"nrel_bridge", ScType::ConstNodeNonRole};
+  static inline ScKeynode const nrel_shortest_way{"nrel_shortest_way", ScType::ConstNodeNonRole};
   static inline ScKeynode const rrel_bridge{"rrel_bridge", ScType::ConstNodeRole};
   static inline ScKeynode const rrel_graph{"rrel_graph", ScType::ConstNodeRole};
-  static inline ScKeynode const rrel_shortest_way{"rrel_shortest_way", ScType::ConstNodeRole};
   static inline ScKeynode const rrel_subgraph{"rrel_subgraph", ScType::ConstNodeRole};
   static inline ScKeynode const rrel_central_district{"rrel_central_district", ScType::ConstNodeRole};
   static inline ScKeynode const nrel_number{"nrel_number", ScType::ConstNodeNonRole};
