@@ -9,6 +9,10 @@ public:
   static inline ScKeynode const action_check_connectivity{"action_check_connectivity", ScType::ConstNodeClass};
   // static inline ScKeynode const action_find_shortest_ways{"action_find_shortest_ways", ScType::ConstNodeClass};
   static inline ScKeynode const action_transport_net_bfs{"action_transport_net_bfs", ScType::ConstNodeClass};
+  // static inline ScKeynode const action_find_shortest_ways{"action_find_shortest_ways", ScType::ConstNodeClass};
+  // static inline ScKeynode const action_calculate_route_net_diameter_and_central{
+  //     "action_calculate_route_net_diameter_and_central",
+  //     ScType::ConstNodeClass};
   static inline ScKeynode const concept_ready_to_analyze_city_routes{
       "concept_ready_to_analyze_city_routes",
       ScType::ConstNodeClass};
@@ -30,7 +34,8 @@ public:
   static inline ScKeynode const concept_tram_route{"concept_tram_route", ScType::ConstNodeClass};
   static inline ScKeynode const concept_subway_route{"concept_subway_route", ScType::ConstNodeClass};
   static inline ScKeynode const concept_city{"concept_city", ScType::ConstNodeClass};
-  static inline ScKeynode const concept_center_district{"concept_center_district", ScType::ConstNodeClass};
+  static inline ScKeynode const concept_district{"concept_district", ScType::ConstNodeClass};
+  static inline ScKeynode const concept_central_district{"concept_central_district", ScType::ConstNodeClass};
   static inline ScKeynode const concept_connect_graph{"concept_connect_graph", ScType::ConstNodeClass};
   static inline ScKeynode const concept_noconnect_graph{"concept_noconnect_graph", ScType::ConstNodeClass};
   static inline ScKeynode const concept_shortest_way{"concept_shortest_way", ScType::ConstNodeClass};

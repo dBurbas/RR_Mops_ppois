@@ -14,9 +14,11 @@ public:
   ScTemplate GetInitiationConditionTemplate(TransportNetBFSEvent const & event) const override;
   ScAddr GetActionClass() const override;
   ScResult DoProgram(TransportNetBFSEvent const & event, ScAction & action) override;
-  void CalculateCentralRegionAndDiameterBFS(ScAddr & city) const;
-  // void BFSShortestPathsUtil(std::vector<int> & dist) const;
-  int CountCityDistricts() const;
+
+  void CalculateCentralRegionAndDiameterBFS(ScAddr & city);
+  void FindCentralDistricts(std::vector<int> const & eccentrics, int const radius);
+  void BFSShortestPathsSingleSource(int start, std::vector<int> & dist, int numberOfDistricts) const;
+
   ScAddrUnorderedSet GetDistricts(ScAddr const & city);
   void FindShortestWays(
       ScAddrUnorderedSet const & districts,

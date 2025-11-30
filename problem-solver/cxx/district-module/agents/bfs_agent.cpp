@@ -1,15 +1,15 @@
-#include "bfs_agent.hpp"
-#include "../keynodes/graph_district_keynodes.hpp"
-#include "../settings/settings.hpp"
 #include <queue>
-#include "../utils/string_formatter.hpp"
 #include <algorithm>
-#include "../utils/utils.hpp"
 #include <vector>
 #include <utility>
 #include <map>
 #include <string>
 #include <unordered_set>
+#include "bfs_agent.hpp"
+#include "../keynodes/graph_district_keynodes.hpp"
+#include "../settings/settings.hpp"
+#include "../utils/string_formatter.hpp"
+#include "../utils/utils.hpp"
 
 TransportNetBFSAgent::TransportNetBFSAgent()
 {
@@ -35,6 +35,7 @@ ScAddr TransportNetBFSAgent::GetActionClass() const
 
 ScResult TransportNetBFSAgent::DoProgram(TransportNetBFSEvent const & event, ScAction & action)
 {
+  m_logger.Info("Agent start do program");
   m_logger.Info("Agent start to calculate route web diameter and central districts");
   ScIterator3Ptr const it3 =
       m_context.CreateIterator3(GraphKeynodes::concept_city, ScType::ConstPosArc, ScType::ConstNodeStructure);
@@ -193,44 +194,21 @@ void TransportNetBFSAgent::SearchShortestWaysInCity(ScAddrUnorderedSet const & d
   m_logger.Info("Finish finding shortest ways in city");
 }
 
-void TransportNetBFSAgent::CalculateCentralRegionAndDiameterBFS(ScAddr & city) const
+void TransportNetBFSAgent::CalculateCentralRegionAndDiameterBFS(ScAddr & city)
 {
-  int numberOfDistricts = CountCityDistricts();
+  m_logger.Info("Start calculating diameter and central regions");
+  int numberOfDistricts = GetDistricts(city).size();
+  m_logger.Debug("Districts number: " + std::to_string(numberOfDistricts));
   std::vector<int> eccentricities(numberOfDistricts);
   int diameter = 0;
   int radius = numberOfDistricts;
   for (size_t i = 0; i < numberOfDistricts; i++)
   {
     std::vector<int> distances(numberOfDistricts, numberOfDistricts);
-    std::queue<int> utilBFSQueue;
-    distances[i] = 0;
-    utilBFSQueue.push(i);
-    // TODO: вынести в отдельную функцию BFS одной вершины
-    while (!utilBFSQueue.empty())
-    {
-      int current_numb = utilBFSQueue.front();
-      ScAddr current_district =
-          m_context.SearchElementBySystemIdentifier(BASE_NAME_OF_NODES + std::to_string(current_numb));
-      utilBFSQueue.pop();
-      ScIterator5Ptr const it5 = m_context.CreateIterator5(
-          current_district,
-          ScType::ConstCommonEdge,
-          ScType::ConstNode,
-          ScType::ConstPermPosArc,
-          GraphKeynodes::nrel_road);
-      while (it5->Next())
-      {
-        ScAddr to_district = it5->Get(2);
-        int to_district_numb = std::stoi(
-            DividerNumberFromString::GetNumberOfRouteOrDistrict(m_context.GetElementSystemIdentifier(to_district)));
-        if (distances[to_district_numb] > distances[current_numb] + 1)
-        {
-          distances[to_district_numb] = distances[current_numb] + 1;
-          utilBFSQueue.push(to_district_numb);
-        }
-        m_logger.Debug("Pushed" + std::to_string(to_district_numb));
-      }
-    }
+    m_logger.Debug("Start BFS for district_" + std::to_string(i));
+    BFSShortestPathsSingleSource(i, distances, numberOfDistricts);
+    m_logger.Info("Success BFS for district_" + std::to_string(i));
+    m_logger.Debug("Start find maximum of shortest distances for district_" + std::to_string(i));
     int i_max = 0;
     for (int current = 0; current < numberOfDistricts; current++)
     {
@@ -240,70 +218,73 @@ void TransportNetBFSAgent::CalculateCentralRegionAndDiameterBFS(ScAddr & city) c
       }
       i_max = std::max(i_max, distances[current]);
     }
+    m_logger.Info("Success find maximum of shortest distances for district_" + std::to_string(i));
     eccentricities[i] = i_max;
     diameter = std::max(diameter, i_max);
     radius = std::min(radius, i_max);
   }
-  ScAddrVector centers;
-  for (int i = 0; i < numberOfDistricts; i++)
+  m_logger.Debug("Start find and connect central districts to class of central districts");
+  FindCentralDistricts(eccentricities, radius);
+  m_logger.Debug("Success find and connect central districts to class of central districts");
+
+  m_logger.Debug("Try create link diameter of transport net");
+  ScAddr const & linkDiameterTransportNet = m_context.GenerateLink(ScType::ConstNodeLink);
+  m_context.SetLinkContent(linkDiameterTransportNet, std::to_string(diameter));
+  m_logger.Info("Success create link of diameter of transport net");
+  m_logger.Debug("Try create connection between city and link");
+  ScAddr const & arcCommonAddr = m_context.GenerateConnector(ScType::ConstCommonArc, city, linkDiameterTransportNet);
+  ScAddr const & nrelTransportNetDiameter =
+      m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::nrel_transport_net_diameter, arcCommonAddr);
+  m_logger.Info("Success create connection between city and link");
+  m_logger.Info("Success calculating diameter and central regions");
+}
+
+void TransportNetBFSAgent::FindCentralDistricts(std::vector<int> const & eccentrics, int const radius)
+{
+  int const n = eccentrics.size();
+  for (int i = 0; i < n; i++)
   {
-    if (eccentricities[i] == radius)
+    if (eccentrics[i] == radius)
     {
       ScAddr center = m_context.SearchElementBySystemIdentifier(BASE_NAME_OF_NODES + std::to_string(i));
       if (center.IsValid())
       {
         m_logger.Debug("Try add district in class of center districts");
         ScAddr const & arcCommonAddr =
-            m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_center_district, center);
+            m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_central_district, center);
       }
     }
   }
-  // TODO:вынести в отдельные функции ниже
-  m_logger.Debug("Try create link diameter of transport net");
-  ScAddr const & linkDiameterTransportNet = m_context.GenerateLink(ScType::ConstNodeLink);
-  m_context.SetLinkContent(linkDiameterTransportNet, std::to_string(diameter));
-  m_logger.Info("Create success link of diameter of transport net");
-  m_logger.Debug("Try create connection between city and link");
-  ScAddr const & arcCommonAddr = m_context.GenerateConnector(ScType::ConstCommonArc, city, linkDiameterTransportNet);
-  ScAddr const & nrelTransportNetDiameter =
-      m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::nrel_transport_net_diameter, arcCommonAddr);
-  m_logger.Info("Success create connection between route and link");
 }
 
-// void TransportNetBFSAgent::BFSShortestPathsUtil(std::vector<int> & dist) const {}
-
-int TransportNetBFSAgent::CountCityDistricts() const
+void TransportNetBFSAgent::BFSShortestPathsSingleSource(int start, std::vector<int> & dist, int numberOfDistricts) const
 {
-  m_logger.Debug("Agent start to make counting of districts");
-  int numb = 0;
-  std::string districtName;
-  m_logger.Debug("Agent start to make cycle of counting of districts");
-  while (true)
+  std::queue<int> utilBFSQueue;
+  dist[start] = 0;
+  utilBFSQueue.push(start);
+  m_logger.Debug("Source vertex in BFS: " + std::to_string(start));
+  while (!utilBFSQueue.empty())
   {
-    m_logger.Debug(numb);
-
-    districtName = BASE_NAME_OF_NODES + std::to_string(numb);
-    try
+    int current_numb = utilBFSQueue.front();
+    ScAddr current_district =
+        m_context.SearchElementBySystemIdentifier(BASE_NAME_OF_NODES + std::to_string(current_numb));
+    utilBFSQueue.pop();
+    ScIterator5Ptr const it5 = m_context.CreateIterator5(
+        current_district,
+        ScType::ConstCommonEdge,
+        ScType::ConstNode,
+        ScType::ConstPermPosArc,
+        GraphKeynodes::nrel_road);
+    while (it5->Next())
     {
-      ScAddr district = m_context.SearchElementBySystemIdentifier(districtName);
-      if (!district.IsValid())
-        break;
-      m_logger.Debug(districtName);
+      ScAddr to_district = it5->Get(2);
+      int to_district_numb = std::stoi(
+          DividerNumberFromString::GetNumberOfRouteOrDistrict(m_context.GetElementSystemIdentifier(to_district)));
+      if (dist[to_district_numb] > dist[current_numb] + 1)
+      {
+        dist[to_district_numb] = dist[current_numb] + 1;
+        utilBFSQueue.push(to_district_numb);
+      }
     }
-    catch (utils::ExceptionInvalidParams const & e)
-    {
-      m_logger.Error("Agent: SearchElementBySystemIdentifier throws exception in counting city districts");
-      throw std::runtime_error("Transport Net BFS agent: SearchElementBySystemIdentifier error");
-      break;
-    }
-    ++numb;
-    if (numb > 10000)
-    {
-      m_logger.Error("Agent: Infinite cycle during counting city districts");
-      throw std::runtime_error("Transport Net BFS agent: Infinite cycle during counting districts");
-      break;
-    }
-  };
-  m_logger.Debug("Agent end counting districts");
-  return numb;
+  }
 }
