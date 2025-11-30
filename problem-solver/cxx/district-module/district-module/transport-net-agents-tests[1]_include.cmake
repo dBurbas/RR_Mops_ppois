@@ -1,5 +1,0 @@
-if(EXISTS "/home/artem/ostis/RR_Mops_ppois/problem-solver/cxx/district-module/district-module/transport-net-agents-tests[1]_tests.cmake")
-  include("/home/artem/ostis/RR_Mops_ppois/problem-solver/cxx/district-module/district-module/transport-net-agents-tests[1]_tests.cmake")
-else()
-  add_test(transport-net-agents-tests_NOT_BUILT transport-net-agents-tests_NOT_BUILT)
-endif()
