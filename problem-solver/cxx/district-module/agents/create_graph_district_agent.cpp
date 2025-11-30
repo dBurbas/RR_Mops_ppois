@@ -8,7 +8,6 @@
 #include <fstream>
 #include <map>
 
-// TODO: Добавить документацию
 CreateGraphAgent::CreateGraphAgent()
 {
   m_logger = utils::ScLogger(utils::ScLogger::ScLogType::File, "logs/CreateGraphAgent.log", utils::ScLogLevel::Debug);
@@ -60,7 +59,8 @@ void CreateGraphAgent::GetDistrict(ScAddr & districtNode, std::string const & na
     ScAddr const & arcCommonAddr = m_context.GenerateConnector(ScType::ConstCommonArc, districtNode, linkName);
     ScAddr const & resDistrict =
         m_context.GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::nrel_main_idtf, arcCommonAddr);
-
+    ScAddr const & districtToClassOfDistricts =
+        m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_district, districtNode);
     // this->districts_.push_back(districtNode);
     this->translateMap_[nameOfDistrict] = resultSystemIdentifier;
   }
