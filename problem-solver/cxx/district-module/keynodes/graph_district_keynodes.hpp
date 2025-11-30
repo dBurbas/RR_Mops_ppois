@@ -27,6 +27,7 @@ public:
   static inline ScKeynode const rrel_graph{"rrel_graph", ScType::ConstNodeRole};
   static inline ScKeynode const rrel_shortest_way{"rrel_shortest_way", ScType::ConstNodeRole};
   static inline ScKeynode const rrel_subgraph{"rrel_subgraph", ScType::ConstNodeRole};
+  static inline ScKeynode const rrel_central_district{"rrel_central_district", ScType::ConstNodeRole};
   static inline ScKeynode const nrel_number{"nrel_number", ScType::ConstNodeNonRole};
   static inline ScKeynode const nrel_length_way{"nrel_length_way", ScType::ConstNodeNonRole};
   static inline ScKeynode const nrel_connectivity_component{"nrel_connectivity_component", ScType::ConstNodeNonRole};
@@ -35,7 +36,6 @@ public:
   static inline ScKeynode const concept_subway_route{"concept_subway_route", ScType::ConstNodeClass};
   static inline ScKeynode const concept_city{"concept_city", ScType::ConstNodeClass};
   static inline ScKeynode const concept_district{"concept_district", ScType::ConstNodeClass};
-  static inline ScKeynode const concept_central_district{"concept_central_district", ScType::ConstNodeClass};
   static inline ScKeynode const concept_connect_graph{"concept_connect_graph", ScType::ConstNodeClass};
   static inline ScKeynode const concept_noconnect_graph{"concept_noconnect_graph", ScType::ConstNodeClass};
   static inline ScKeynode const concept_shortest_way{"concept_shortest_way", ScType::ConstNodeClass};

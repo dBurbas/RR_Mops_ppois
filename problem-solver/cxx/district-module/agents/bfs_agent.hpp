@@ -16,7 +16,7 @@ public:
   ScResult DoProgram(TransportNetBFSEvent const & event, ScAction & action) override;
 
   void CalculateCentralRegionAndDiameterBFS(ScAddr & city);
-  void FindCentralDistricts(std::vector<int> const & eccentrics, int const radius);
+  void FindCentralDistricts(ScAddr & city, std::vector<int> const & eccentrics, int const radius);
   void BFSShortestPathsSingleSource(int start, std::vector<int> & dist, int numberOfDistricts) const;
 
   ScAddrUnorderedSet GetDistricts(ScAddr const & city);

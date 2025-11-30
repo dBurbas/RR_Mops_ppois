@@ -224,7 +224,7 @@ void TransportNetBFSAgent::CalculateCentralRegionAndDiameterBFS(ScAddr & city)
     radius = std::min(radius, i_max);
   }
   m_logger.Debug("Start find and connect central districts to class of central districts");
-  FindCentralDistricts(eccentricities, radius);
+  FindCentralDistricts(city, eccentricities, radius);
   m_logger.Debug("Success find and connect central districts to class of central districts");
 
   m_logger.Debug("Try create link diameter of transport net");
@@ -239,7 +239,7 @@ void TransportNetBFSAgent::CalculateCentralRegionAndDiameterBFS(ScAddr & city)
   m_logger.Info("Success calculating diameter and central regions");
 }
 
-void TransportNetBFSAgent::FindCentralDistricts(std::vector<int> const & eccentrics, int const radius)
+void TransportNetBFSAgent::FindCentralDistricts(ScAddr & city, std::vector<int> const & eccentrics, int const radius)
 {
   int const n = eccentrics.size();
   for (int i = 0; i < n; i++)
@@ -249,9 +249,10 @@ void TransportNetBFSAgent::FindCentralDistricts(std::vector<int> const & eccentr
       ScAddr center = m_context.SearchElementBySystemIdentifier(BASE_NAME_OF_NODES + std::to_string(i));
       if (center.IsValid())
       {
-        m_logger.Debug("Try add district in class of center districts");
-        ScAddr const & arcCommonAddr =
-            m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_central_district, center);
+        m_logger.Debug("Try add district to center districts relation");
+        ScAddr const & arcCityCentralDistrict = m_context.GenerateConnector(ScType::ConstPermPosArc, city, center);
+        ScAddr const & arcCentralRelation = m_context.GenerateConnector(
+            ScType::ConstPermPosArc, GraphKeynodes::rrel_central_district, arcCityCentralDistrict);
       }
     }
   }
