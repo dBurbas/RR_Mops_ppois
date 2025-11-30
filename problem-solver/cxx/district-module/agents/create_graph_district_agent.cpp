@@ -219,7 +219,7 @@ ScResult CreateGraphAgent::DoProgram(ScActionInitiatedEvent const & event, ScAct
 
   m_logger.Debug("Try to create concept which make signalize that graph was built");
   ScAddr const & actionSuccessBuildGraph =
-      m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_ready_to_analyze_city_routes, city);
+      m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::action_ready_to_analyze_city_routes, city);
   m_logger.Info("Successful create concept which make signalize that graph was built");
 
   action.SetResult(city);

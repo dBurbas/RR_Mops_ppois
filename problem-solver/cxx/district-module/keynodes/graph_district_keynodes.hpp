@@ -13,8 +13,8 @@ public:
   // static inline ScKeynode const action_calculate_route_net_diameter_and_central{
   //     "action_calculate_route_net_diameter_and_central",
   //     ScType::ConstNodeClass};
-  static inline ScKeynode const concept_ready_to_analyze_city_routes{
-      "concept_ready_to_analyze_city_routes",
+  static inline ScKeynode const action_ready_to_analyze_city_routes{
+      "action_ready_to_analyze_city_routes",
       ScType::ConstNodeClass};
   // static inline ScKeynode const nrel_result_connectivity{"nrel_result_connectivity", ScType::ConstNodeNonRole};
   // static inline ScKeynode const nrel_result_bridge{"nrel_result_bridge", ScType::ConstNodeNonRole};

@@ -18,13 +18,13 @@ TransportNetBFSAgent::TransportNetBFSAgent()
 
 ScAddr TransportNetBFSAgent::GetEventSubscriptionElement() const
 {
-  return GraphKeynodes::concept_ready_to_analyze_city_routes;
+  return GraphKeynodes::action_ready_to_analyze_city_routes;
 }
 
 ScTemplate TransportNetBFSAgent::GetInitiationConditionTemplate(TransportNetBFSEvent const & event) const
 {
   ScTemplate templ;
-  templ.Triple(GraphKeynodes::concept_ready_to_analyze_city_routes, ScType::VarPermPosArc, ScType::VarNode);
+  templ.Triple(GraphKeynodes::action_ready_to_analyze_city_routes, ScType::VarPermPosArc, ScType::VarNode);
   return templ;
 }
 
