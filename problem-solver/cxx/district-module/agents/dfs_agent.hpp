@@ -21,10 +21,7 @@ public:
       ScAddrUnorderedSet & districts,
       std::vector<std::pair<std::string, std::string>> & bridges,
       std::vector<std::pair<ScAddr, ScAddr>> & bridgesAddr);
-  void DefineTypeOfGraph(
-      std::vector<ScAddrUnorderedSet> & resComponents,
-      ScAddr & city,
-      ScAddrUnorderedSet & resDistricts);
+  void DefineTypeOfGraph(std::vector<ScAddrUnorderedSet> & resComponents, ScAddr & city);
   void GetResultOfConnectivity(
       std::vector<ScAddrUnorderedSet> & resComponents,
       ScAddrUnorderedSet & districts,

@@ -276,10 +276,7 @@ void TransportNetDFSAgent::GetResultOfConnectivity(
   }
 }
 
-void TransportNetDFSAgent::DefineTypeOfGraph(
-    std::vector<ScAddrUnorderedSet> & resComponents,
-    ScAddr & city,
-    ScAddrUnorderedSet & resDistricts)
+void TransportNetDFSAgent::DefineTypeOfGraph(std::vector<ScAddrUnorderedSet> & resComponents, ScAddr & city)
 {
   if (resComponents.size() == 1)
   {
@@ -382,7 +379,7 @@ ScResult TransportNetDFSAgent::DoProgram(ConnectivityEvent const & event, ScActi
   m_logger.Info("Finish checking what districts are stay alone");
 
   m_logger.Info("Try to define type of graph");
-  DefineTypeOfGraph(resComponents, city, resDistricts);
+  DefineTypeOfGraph(resComponents, city);
   m_logger.Info("Type of graph is successfully defined");
 
   m_logger.Info("Start finding connectivity result");

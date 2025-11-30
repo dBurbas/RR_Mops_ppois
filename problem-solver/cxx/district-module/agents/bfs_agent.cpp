@@ -63,6 +63,7 @@ ScResult TransportNetBFSAgent::DoProgram(TransportNetBFSEvent const & event, ScA
   m_logger.Info("Agent finish finding shortest ways");
   return action.FinishSuccessfully();
 }
+
 ScAddrUnorderedSet TransportNetBFSAgent::GetDistricts(ScAddr const & city)
 {
   m_logger.Info("Try to create iterator");
@@ -105,6 +106,7 @@ void TransportNetBFSAgent::FindShortestWays(
     ScAddr const & startVertex,
     std::map<std::string, int> & resDists)
 {
+  m_logger.Info("Start finding shortest ways for start vertex");
   ScAddrQueue queue;
   ScAddrUnorderedSet visited;
   std::string nameStartVertex = m_context.GetElementSystemIdentifier(startVertex);
@@ -132,6 +134,7 @@ void TransportNetBFSAgent::FindShortestWays(
       }
     }
   }
+  m_logger.Info("Agent find all ways for districts, where we can appear from start vertex");
   for (auto const & district : districts)
   {
     if (visited.find(district) == visited.end())
@@ -140,10 +143,12 @@ void TransportNetBFSAgent::FindShortestWays(
       resDists[nameUnreachDistr] = INF;
     }
   }
+  m_logger.Info("Agent finish findig all ways for all districts");
 }
 
 void TransportNetBFSAgent::SearchShortestWaysInCity(ScAddrUnorderedSet const & districts, ScAddr & city)
 {
+  m_logger.Info("Start finding shortest ways in city");
   ScStructure shortestDists = m_context.GenerateStructure();
   std::vector<std::pair<std::string, std::string>> createdPairs;
   for (auto const & district : districts)
@@ -185,8 +190,8 @@ void TransportNetBFSAgent::SearchShortestWaysInCity(ScAddrUnorderedSet const & d
           m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::rrel_shortest_way, connectorCity);
     }
   }
+  m_logger.Info("Finish finding shortest ways in city");
 }
-
 
 void TransportNetBFSAgent::CalculateCentralRegionAndDiameterBFS(ScAddr & city) const
 {
