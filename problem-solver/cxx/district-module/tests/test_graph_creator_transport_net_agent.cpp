@@ -6,21 +6,32 @@
 
 using AgentTest = ScMemoryTest;
 
-TEST_F(AgentTest, CreateGraphAgentBuildsCityGraphFromCsvFormat)
+class AgentTestCreationGraph : public AgentTest
 {
-  m_ctx->SubscribeAgent<CreateGraphAgent>();
+protected:
+  ScAction CreateGraphActionWithCsv(std::string const & csvData)
+  {
+    m_ctx->SubscribeAgent<CreateGraphAgent>();
 
-  ScAction action = m_ctx->GenerateAction(GraphKeynodes::action_construct_an_undirected_transport_graph);
+    ScAction action = m_ctx->GenerateAction(GraphKeynodes::action_construct_an_undirected_transport_graph);
 
+    ScAddr const & linkCsv = m_ctx->GenerateLink(ScType::ConstNodeLink);
+    m_ctx->SetLinkContent(linkCsv, csvData);
+
+    ScAddr const & arcCommon = m_ctx->GenerateConnector(ScType::ConstCommonArc, action, linkCsv);
+    m_ctx->GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::nrel_file_path, arcCommon);
+
+    return action;
+  }
+};
+
+TEST_F(AgentTestCreationGraph, CreateGraphAgentBuildsCityGraphFromCsvFormat)
+{
   std::string const csvData =
       "Ленинский;Кировский;автобус 1\n"
       "Кировский;Октябрьский;трамвай 3";
 
-  ScAddr const & linkCsv = m_ctx->GenerateLink(ScType::ConstNodeLink);
-  m_ctx->SetLinkContent(linkCsv, csvData);
-
-  ScAddr const & arcCommon = m_ctx->GenerateConnector(ScType::ConstCommonArc, action, linkCsv);
-  m_ctx->GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::nrel_file_path, arcCommon);
+  ScAction action = CreateGraphActionWithCsv(csvData);
 
   action.InitiateAndWait();
 
@@ -48,7 +59,7 @@ TEST_F(AgentTest, CreateGraphAgentBuildsCityGraphFromCsvFormat)
   m_ctx->UnsubscribeAgent<CreateGraphAgent>();
 }
 
-TEST_F(AgentTest, CreateGraphAgentFailsIfNoFilePathLink)
+TEST_F(AgentTestCreationGraph, CreateGraphAgentFailsIfNoFilePathLink)
 {
   m_ctx->SubscribeAgent<CreateGraphAgent>();
 
@@ -61,45 +72,31 @@ TEST_F(AgentTest, CreateGraphAgentFailsIfNoFilePathLink)
   m_ctx->UnsubscribeAgent<CreateGraphAgent>();
 }
 
-TEST_F(AgentTest, CreateGraphAgentBuildsCityGraphFromCsvFormatIncorrect)
+TEST_F(AgentTestCreationGraph, CreateGraphAgentBuildsCityGraphFromCsvFormatIncorrect)
 {
-  m_ctx->SubscribeAgent<CreateGraphAgent>();
-
-  ScAction action = m_ctx->GenerateAction(GraphKeynodes::action_construct_an_undirected_transport_graph);
-
   std::string const csvData2 =
       "Ленинский;Кировский;автобус 1\n"
       "Кировский;Октябрьский;самолет 3";
 
-  ScAddr const & linkCsv2 = m_ctx->GenerateLink(ScType::ConstNodeLink);
-  m_ctx->SetLinkContent(linkCsv2, csvData2);
-
-  ScAddr const & arcCommon2 = m_ctx->GenerateConnector(ScType::ConstCommonArc, action, linkCsv2);
-  m_ctx->GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::nrel_file_path, arcCommon2);
+  ScAction action = CreateGraphActionWithCsv(csvData2);
 
   action.InitiateAndWait();
+
   EXPECT_FALSE(action.IsFinishedSuccessfully());
 
   m_ctx->UnsubscribeAgent<CreateGraphAgent>();
 }
 
-TEST_F(AgentTest, CreateGraphAgentBuildsCityGraphFromCsvFormatIncorrectEmptyDistr)
+TEST_F(AgentTestCreationGraph, CreateGraphAgentBuildsCityGraphFromCsvFormatIncorrectEmptyDistr)
 {
-  m_ctx->SubscribeAgent<CreateGraphAgent>();
-
-  ScAction action = m_ctx->GenerateAction(GraphKeynodes::action_construct_an_undirected_transport_graph);
-
-  std::string const csvData2 =
+  std::string const csvData3 =
       "Ленинский;;автобус 1\n"
       "Кировский;Октябрьский;трамвай 3";
 
-  ScAddr const & linkCsv2 = m_ctx->GenerateLink(ScType::ConstNodeLink);
-  m_ctx->SetLinkContent(linkCsv2, csvData2);
-
-  ScAddr const & arcCommon2 = m_ctx->GenerateConnector(ScType::ConstCommonArc, action, linkCsv2);
-  m_ctx->GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::nrel_file_path, arcCommon2);
+  ScAction action = CreateGraphActionWithCsv(csvData3);
 
   action.InitiateAndWait();
+
   EXPECT_FALSE(action.IsFinishedSuccessfully());
 
   m_ctx->UnsubscribeAgent<CreateGraphAgent>();

@@ -110,20 +110,22 @@ ScAddrUnorderedSet TransportNetDFSAgent::GetDistricts(ScAddr const & city)
   return districts;
 }
 
-std::string TransportNetDFSAgent::GetMainIndentifier(std::string const & district)
-{
-  auto const & dist = m_context.SearchElementBySystemIdentifier(district);
-  std::string resMainIdtfDistrict;
-  ScIterator5Ptr const it = m_context.CreateIterator5(
-      dist, ScType::ConstCommonArc, ScType::NodeLink, ScType::ConstPermPosArc, ScKeynodes::nrel_main_idtf);
-  it->Next();
-  auto const & linkMainIdtf = it->Get(2);
-  if (linkMainIdtf.IsValid())
-  {
-    m_context.GetLinkContent(linkMainIdtf, resMainIdtfDistrict);
-  }
-  return resMainIdtfDistrict;
-}
+// std::string TransportNetDFSAgent::GetMainIndentifier(std::string const & district)
+// {
+//   auto const & dist = m_context.SearchElementBySystemIdentifier(district);
+//   std::string resMainIdtfDistrict;
+//   ScIterator5Ptr const it = m_context.CreateIterator5(
+//       dist, ScType::ConstCommonArc, ScType::NodeLink, ScType::ConstPermPosArc, ScKeynodes::nrel_main_idtf);
+//   if (!it->Next()){
+//     throw std::logic_error("Incorrect params in iterator");
+//   }
+//   auto const & linkMainIdtf = it->Get(2);
+//   if (linkMainIdtf.IsValid())
+//   {
+//     m_context.GetLinkContent(linkMainIdtf, resMainIdtfDistrict);
+//   }
+//   return resMainIdtfDistrict;
+// }
 
 ScAddrUnorderedSet TransportNetDFSAgent::FindConnection(
     ScAddrUnorderedSet & districts,
@@ -333,7 +335,11 @@ void TransportNetDFSAgent::GetBridges(
   {
     auto const & route = bridgesAddr[i];
     ScIterator3Ptr const it = m_context.CreateIterator3(route.first, ScType::ConstCommonEdge, route.second);
-    it->Next();
+
+    if (!it->Next())
+    {
+      throw std::logic_error("Edge between routes is not exist!");
+    }
 
     ScIterator3Ptr const it2 =
         m_context.CreateIterator3(ScType::ConstNodeStructure, ScType::ConstPermPosArc, it->Get(1));
@@ -396,7 +402,15 @@ ScResult TransportNetDFSAgent::DoProgram(ConnectivityEvent const & event, ScActi
   m_logger.Info("DFSBridges finish working");
 
   m_logger.Info("DFSBridges start searching bridges");
-  GetBridges(bridgesAddr, nodeTuple, city);
+  try
+  {
+    GetBridges(bridgesAddr, nodeTuple, city);
+  }
+  catch (std::logic_error const & e)
+  {
+    m_logger.Error(e.what());
+    return action.FinishUnsuccessfully();
+  }
   m_logger.Info("DFSBridges finish searching bridges");
   return action.FinishSuccessfully();
 }

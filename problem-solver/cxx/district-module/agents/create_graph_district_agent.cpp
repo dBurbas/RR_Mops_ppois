@@ -171,7 +171,11 @@ ScResult CreateGraphAgent::DoProgram(ScActionInitiatedEvent const & event, ScAct
 {
   ScIterator5Ptr const it5 = m_context.CreateIterator5(
       action, ScType::ConstCommonArc, ScType::ConstNodeLink, ScType::ConstPermPosArc, GraphKeynodes::nrel_file_path);
-  it5->Next();
+  if (!it5->Next())
+  {
+    m_logger.Error("Something wrong, graph can't be created!");
+    return action.FinishUnsuccessfully();
+  }
   ScAddr const & elementAddr = it5->Get(2);
 
   if (!elementAddr.IsValid())
