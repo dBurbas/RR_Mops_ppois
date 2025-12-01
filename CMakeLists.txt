@@ -36,3 +36,11 @@ find_package(scl-machine REQUIRED)
 find_package(ps-common-lib REQUIRED)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/problem-solver)
+option(ENABLE_COVERAGE "Enable coverage" OFF)
+
+if(ENABLE_COVERAGE
+   AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
+  target_compile_options(transport-net-agents-tests PRIVATE --coverage -O0 -g)
+  target_link_options(transport-net-agents-tests PRIVATE --coverage)
+endif()
+
