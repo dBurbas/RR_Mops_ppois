@@ -6,7 +6,7 @@ public:
   static inline ScKeynode const action_construct_an_undirected_transport_graph{
       "action_construct_an_undirected_transport_graph",
       ScType::ConstNodeClass};
-  static inline ScKeynode const action_check_connectivity{"action_check_connectivity", ScType::ConstNodeClass};
+  static inline ScKeynode const action_transport_net_dfs{"action_transport_net_dfs", ScType::ConstNodeClass};
   // static inline ScKeynode const action_find_shortest_ways{"action_find_shortest_ways", ScType::ConstNodeClass};
   static inline ScKeynode const action_transport_net_bfs{"action_transport_net_bfs", ScType::ConstNodeClass};
   // static inline ScKeynode const action_find_shortest_ways{"action_find_shortest_ways", ScType::ConstNodeClass};

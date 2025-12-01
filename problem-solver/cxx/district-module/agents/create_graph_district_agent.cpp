@@ -45,6 +45,10 @@ int CreateGraphAgent::GetNumberOfCurrentSystemIdentifier(std::string const & bas
 
 void CreateGraphAgent::GetDistrict(ScAddr & districtNode, std::string const & nameOfDistrict)
 {
+  if (nameOfDistrict.empty())
+  {
+    throw std::invalid_argument("Name of district can't be empty!");
+  }
   auto district = this->translateMap_.find(nameOfDistrict);
   if (district == this->translateMap_.end())
   {
@@ -75,17 +79,21 @@ void CreateGraphAgent::GetDistrict(ScAddr & districtNode, std::string const & na
 
 void CreateGraphAgent::GetTypeOfRoute(ScAddr & typeOfRoute, std::string const & nameOfRoute, ScStructure const & route)
 {
-  if (nameOfRoute.find("автобус") != std::string::npos)
+  if (nameOfRoute.find(BASE_NAME_OF_BUS) != std::string::npos)
   {
     typeOfRoute = m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_bus_route, route);
   }
-  else if (nameOfRoute.find("трамвай") != std::string::npos)
+  else if (nameOfRoute.find(BASE_NAME_OF_TRAM) != std::string::npos)
   {
     typeOfRoute = m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_tram_route, route);
   }
-  else
+  else if (nameOfRoute.find(BASE_NAME_OF_SUBWAY) != std::string::npos)
   {
     typeOfRoute = m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_subway_route, route);
+  }
+  else
+  {
+    throw std::invalid_argument("This type of transport is not defined!");
   }
 }
 
@@ -98,33 +106,25 @@ void CreateGraphAgent::GenerateRoutes(std::vector<std::string> const & resOfSpli
     m_logger.Debug(data);
 
     auto const & districtElements = StringFormatter::Split(data, ';');
+    if (districtElements.size() != 3)
+    {
+      throw std::invalid_argument("Incorrect format of scv!");
+    }
+    
     auto const & startDistrict = districtElements[0];
     auto const & endDistrict = districtElements[1];
     auto const & nameOfRoute = districtElements[2];
+
 
     ScAddr startDistrictNode;
     ScAddr endDistrictNode;
 
     m_logger.Debug("Start district try to create");
-    try
-    {
-      GetDistrict(startDistrictNode, startDistrict);
-    }
-    catch (std::logic_error const & e)
-    {
-      throw std::runtime_error("GenerateRoutes error: " + std::string(e.what()));
-    }
+    GetDistrict(startDistrictNode, startDistrict);
     m_logger.Info("Start district create");
 
     m_logger.Debug("End district try to create");
-    try
-    {
-      GetDistrict(endDistrictNode, endDistrict);
-    }
-    catch (std::logic_error const & e)
-    {
-      throw std::runtime_error("GenerateRoutes error: " + std::string(e.what()));
-    }
+    GetDistrict(endDistrictNode, endDistrict);
     m_logger.Info("End district create");
 
     m_logger.Debug("Try to create road between two districts");
@@ -193,17 +193,21 @@ ScResult CreateGraphAgent::DoProgram(ScActionInitiatedEvent const & event, ScAct
   {
     GenerateRoutes(resOfSplit, city);
   }
-  catch (std::runtime_error const & e)
+  catch (std::invalid_argument const & e)
   {
     m_logger.Error(e.what());
-    action.FinishUnsuccessfully();
+    return action.FinishUnsuccessfully();
+  }
+  catch (...)
+  {
+    return action.FinishUnsuccessfully();
   }
 
   m_logger.Debug("Try to create city name");
   ScAddr const & linkCityName = m_context.GenerateLink(ScType::ConstNodeLink);
   // TODO: Подумать на счет того чтобы брать имя города из имени файла csv к примеру: Маршруты_Новосибирска.csv
   m_context.SetLinkContent(linkCityName, BASE_NAME_OF_CITY);
-  m_logger.Info("Succesffuly add name to city");
+  m_logger.Info("Succesfully add name to city");
 
   ScAddr const & nameCityArc = m_context.GenerateConnector(ScType::ConstCommonArc, city, linkCityName);
 

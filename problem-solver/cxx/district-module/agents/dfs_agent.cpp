@@ -29,7 +29,7 @@ ScTemplate TransportNetDFSAgent::GetInitiationConditionTemplate(ConnectivityEven
 
 ScAddr TransportNetDFSAgent::GetActionClass() const
 {
-  return GraphKeynodes::action_check_connectivity;
+  return GraphKeynodes::action_transport_net_dfs;
 }
 
 int TransportNetDFSAgent::GetCountOfEdges(ScAddr const & el)

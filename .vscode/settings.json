@@ -37,6 +37,20 @@
                     }
                 }
             },
+        },
+        {
+            "pattern": "build/**/bin/transport-net-agents-tests",
+            "cwd": "${workspaceFolder}/problem-solver/cxx/district-module/tests",
+            "gtest": {
+                "testGrouping": {
+                    "groupByLabel": {
+                        "label": "unittests",
+                        "groupByExecutable": {
+                            "description": "${relDirpath}/"
+                        }
+                    }
+                }
+            },
         }
     ],
     "files.associations": {
