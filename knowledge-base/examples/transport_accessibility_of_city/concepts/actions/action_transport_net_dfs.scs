@@ -1,0 +1,14 @@
+action_transport_net_dfs
+<- sc_node_class;
+<- concept_class;
+=> nrel_main_idtf:
+    [действие обхода в глубину графа транспортной сети]
+    (* 
+        <- lang_ru;;
+    *);
+    [action transport net dfs]
+    (*
+        <- lang_en;;
+    *);
+<= nrel_inclusion:
+    concept_information_action;;

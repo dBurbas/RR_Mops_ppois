@@ -1,0 +1,14 @@
+action_ready_to_analyze_city_routes
+<- sc_node_class;
+<- concept_class;
+=> nrel_main_idtf:
+    [действие готовности графа к анализу городских маршрутов]
+    (* 
+        <- lang_ru;;
+    *);
+    [action ready to analyze city routes]
+    (*
+        <- lang_en;;
+    *);
+<= nrel_inclusion:
+    concept_information_action;;

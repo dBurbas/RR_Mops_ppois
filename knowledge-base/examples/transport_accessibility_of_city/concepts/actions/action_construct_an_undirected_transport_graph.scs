@@ -1,0 +1,14 @@
+action_construct_an_undirected_transport_graph
+<- sc_node_class;
+<- concept_class;
+=> nrel_main_idtf:
+    [действие создания неориентированного графа]
+    (* 
+        <- lang_ru;;
+    *);
+    [action construct an undirected transport graph]
+    (*
+        <- lang_en;;
+    *);
+<= nrel_inclusion:
+    concept_information_action;;
