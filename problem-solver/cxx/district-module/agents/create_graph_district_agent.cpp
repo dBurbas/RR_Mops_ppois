@@ -65,15 +65,12 @@ void CreateGraphAgent::GetDistrict(ScAddr & districtNode, std::string const & na
         m_context.GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::nrel_main_idtf, arcCommonAddr);
     ScAddr const & districtToClassOfDistricts =
         m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_district, districtNode);
-    // this->districts_.push_back(districtNode);
     this->translateMap_[nameOfDistrict] = resultSystemIdentifier;
   }
   else
   {
     std::string const & resultSystemIdentifier = this->translateMap_[nameOfDistrict];
     districtNode = m_context.SearchElementBySystemIdentifier(resultSystemIdentifier);
-    // int const & resIndex = StringOperationInSystemIdentifier::GetSystemIdentifier(resultSystemIdentifier);
-    // districtNode = this->districts_[resIndex];
   }
 }
 
@@ -110,11 +107,10 @@ void CreateGraphAgent::GenerateRoutes(std::vector<std::string> const & resOfSpli
     {
       throw std::invalid_argument("Incorrect format of scv!");
     }
-    
+
     auto const & startDistrict = districtElements[0];
     auto const & endDistrict = districtElements[1];
     auto const & nameOfRoute = districtElements[2];
-
 
     ScAddr startDistrictNode;
     ScAddr endDistrictNode;
