@@ -21,3 +21,4 @@ ConanPresets.json
 .venv
 
 .DS_Store
+coverage*
