@@ -1,0 +1,11 @@
+concept_route
+<- sc_node_class;
+=> nrel_main_idtf:
+    [маршрут]
+    (*
+        <- lang_ru;;
+    *);
+=> nrel_inclusion:
+    concept_bus_route;
+    concept_tram_route;
+    concept_subway_route;;

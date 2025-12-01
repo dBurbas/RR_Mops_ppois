@@ -1,0 +1,36 @@
+subject_domain_transport_accessibility_of_city
+<- concept_subject_domain;
+=> nrel_main_idtf:
+    [Предметная область транспортных коммуникаций в городе]
+    (*
+        <- lang_ru;;
+    *);
+    [Subject domain transport accessibility of city]
+    (*
+        <- lang_en;;
+    *);
+<= nrel_private_subject_domain: 
+    subject_domain_of_city_objects;
+=> nrel_private_subject_domain:
+    subject_domain_of_transport_nets;
+-> rrel_maximum_studied_object_class:
+    concept_city;
+-> rrel_not_maximum_studied_object_class:
+    concept_route;
+    concept_district;
+-> rrel_explored_relation:
+    nrel_road;
+    nrel_shortest_way;
+    nrel_transport_net_diameter;
+    nrel_length_way;
+    nrel_name;
+    nrel_number;
+=> nrel_note:
+    [Данная предметная область описывает некоторые наземные виды транспортных коммуникаций в городе.]
+    (*
+        <- lang_ru;;
+    *);
+    [This subject domain describes some types of ground transport communications in the city.]
+    (*
+        <- lang_en;;
+    *);;
