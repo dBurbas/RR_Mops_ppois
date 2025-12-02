@@ -122,6 +122,22 @@ protected:
     m_ctx->GetLinkContent(linkDiameter, diameter);
     return std::stoi(diameter);
   }
+
+  int GetCountOfCentralDist(ScAddr const & city)
+  {
+    ScIterator5Ptr it = m_ctx->CreateIterator5(
+        city,
+        ScType::ConstPermPosArc,
+        ScType::ConstNode,
+        ScType::ConstPermPosArc,
+        GraphKeynodes::rrel_central_district);
+    int count = 0;
+    while (it->Next())
+    {
+      count++;
+    }
+    return count;
+  }
 };
 
 TEST_F(BFSAgentTest, BFSAgentCheckDistanceBetweenDistricts)
@@ -163,7 +179,10 @@ TEST_F(BFSAgentTest, BFSAgentCheckDiameter)
   EXPECT_TRUE(city.IsValid());
 
   int diameter = FindDiameterValueOfCity(city);
+  int countCentralDist = GetCountOfCentralDist(city);
+
   EXPECT_EQ(diameter, 4);
+  EXPECT_EQ(countCentralDist, 8);
 }
 
 TEST_F(BFSAgentTest, BFSAgentCheckDiameter2)
@@ -181,7 +200,10 @@ TEST_F(BFSAgentTest, BFSAgentCheckDiameter2)
   EXPECT_TRUE(city.IsValid());
 
   int diameter = FindDiameterValueOfCity(city);
+  int countCentralDist = GetCountOfCentralDist(city);
+
   EXPECT_EQ(diameter, 7);
+  EXPECT_EQ(countCentralDist, 2);
 }
 
 TEST_F(BFSAgentTest, BFSAgentCheckNoDiameter)
@@ -194,5 +216,8 @@ TEST_F(BFSAgentTest, BFSAgentCheckNoDiameter)
   EXPECT_TRUE(city.IsValid());
 
   int diameter = FindDiameterValueOfCity(city);
+  int countCentralDist = GetCountOfCentralDist(city);
+  
   EXPECT_EQ(diameter, 0);
+  EXPECT_EQ(countCentralDist, 0);
 }
