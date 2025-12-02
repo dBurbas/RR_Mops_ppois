@@ -4,8 +4,6 @@
 #include "agents/create_graph_district_agent.hpp"
 #include "keynodes/graph_district_keynodes.hpp"
 #include "settings/settings.hpp"
-#include <thread>
-#include <chrono>
 
 using AgentTest = ScMemoryTest;
 
@@ -38,27 +36,163 @@ protected:
 
     createAction.InitiateAndWait();
     ScStructure city = createAction.GetResult();
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    ScWaiter waiter;
+    waiter.Wait(500);
     return city;
   }
 
-  // ScAddr GetElementByMainIdentifier(std::string const & district)
-  // {
-  //   ScIterator5Ptr it = m_ctx->CreateIterator5(
-  //       ScType::ConstNode,
-  //       ScType::ConstCommonArc,
-  //       ScType::ConstNodeLink,
-  //       ScType::ConstPermPosArc,
-  //       ScKeynodes::nrel_main_idtf);
-  //   while (it->Next())
-  //   {
-  //     auto infoLink = it->Get(2);
-  //     std::string nameDistrict = m_ctx->GetLinkContent(infoLink);
-  //     if (nameDistrict == district)
-  //     {
-  //       return it->Get(0);
-  //     }
-  //   }
-  //   return ScAddr();
-  // }
+  ScAddr GetElementByMainIdentifier(std::string const & district)
+  {
+    ScIterator5Ptr it = m_ctx->CreateIterator5(
+        ScType::ConstNode,
+        ScType::ConstCommonArc,
+        ScType::ConstNodeLink,
+        ScType::ConstPermPosArc,
+        ScKeynodes::nrel_main_idtf);
+    while (it->Next())
+    {
+      auto infoLink = it->Get(2);
+      std::string nameDistrict;
+      m_ctx->GetLinkContent(infoLink, nameDistrict);
+      if (nameDistrict == district)
+      {
+        return it->Get(0);
+      }
+    }
+    return ScAddr();
+  }
+
+  int GetDistBetweenDistr(
+      std::string const & nameFirstDistrict,
+      std::string const & nameSecondDistrict,
+      ScAddr const & city)
+  {
+    ScAddrVector structures;
+    auto firstDistrict = GetElementByMainIdentifier(nameFirstDistrict);
+    ScIterator3Ptr it = m_ctx->CreateIterator3(ScType::ConstNodeStructure, ScType::ConstPermPosArc, firstDistrict);
+    while (it->Next())
+    {
+      auto wayStruct = it->Get(0);
+      if (wayStruct != city)
+      {
+        structures.push_back(wayStruct);
+      }
+    }
+    auto secondDistrict = GetElementByMainIdentifier(nameSecondDistrict);
+    ScAddr structFind = ScAddr();
+    for (auto const & st : structures)
+    {
+      ScIterator3Ptr itByDistInSt = m_ctx->CreateIterator3(st, ScType::ConstPermPosArc, secondDistrict);
+      if (itByDistInSt->Next())
+      {
+        structFind = st;
+      }
+    }
+    ScIterator5Ptr itLengthWay = m_ctx->CreateIterator5(
+        structFind,
+        ScType::ConstCommonArc,
+        ScType::ConstNodeLink,
+        ScType::ConstPermPosArc,
+        GraphKeynodes::nrel_length_way);
+    if (!itLengthWay->Next())
+    {
+      return INF;
+    }
+    std::string dist;
+    auto linkDist = itLengthWay->Get(2);
+    m_ctx->GetLinkContent(linkDist, dist);
+    return std::stoi(dist);
+  }
+
+  int FindDiameterValueOfCity(ScAddr const & city)
+  {
+    ScIterator5Ptr it = m_ctx->CreateIterator5(
+        city,
+        ScType::ConstCommonArc,
+        ScType::ConstNodeLink,
+        ScType::ConstPermPosArc,
+        GraphKeynodes::nrel_transport_net_diameter);
+    if (!it->Next())
+    {
+      return 0;
+    }
+    auto linkDiameter = it->Get(2);
+    std::string diameter;
+    m_ctx->GetLinkContent(linkDiameter, diameter);
+    return std::stoi(diameter);
+  }
 };
+
+TEST_F(BFSAgentTest, BFSAgentCheckDistanceBetweenDistricts)
+{
+  std::string const csvData =
+      "Центральный;Кировский;автобус №5\n"
+      "Центральный;Ленинский;метро, линия 1 \n"
+      "Кировский;Советский;автобус №12 \n"
+      "Ленинский;Октябрьский;автобус №7 \n"
+      "Советский;Дзержинский;трамвай №4 \n"
+      "Октябрьский;Заельцовский;автобус №15 \n"
+      "Дзержинский;Железнодорожный;автобус №23 \n"
+      "Заельцовский;Железнодорожный;автобус №31 \n";
+
+  ScAddr city = CreateAndAnalyzeGraph(csvData);
+  EXPECT_TRUE(city.IsValid());
+
+  int dist = GetDistBetweenDistr("Центральный", "Заельцовский", city);
+  int dist2 = GetDistBetweenDistr("Ленинский", "Кировский", city);
+  int dist3 = GetDistBetweenDistr("Ленинский", "Кировск", city);
+  EXPECT_EQ(dist, 3);
+  EXPECT_EQ(dist2, 2);
+  EXPECT_EQ(dist3, INF);
+}
+
+TEST_F(BFSAgentTest, BFSAgentCheckDiameter)
+{
+  std::string const csvData =
+      "Центральный;Кировский;автобус №5\n"
+      "Центральный;Ленинский;метро, линия 1 \n"
+      "Кировский;Советский;автобус №12 \n"
+      "Ленинский;Октябрьский;автобус №7 \n"
+      "Советский;Дзержинский;трамвай №4 \n"
+      "Октябрьский;Заельцовский;автобус №15 \n"
+      "Дзержинский;Железнодорожный;автобус №23 \n"
+      "Заельцовский;Железнодорожный;автобус №31 \n";
+
+  ScAddr city = CreateAndAnalyzeGraph(csvData);
+  EXPECT_TRUE(city.IsValid());
+
+  int diameter = FindDiameterValueOfCity(city);
+  EXPECT_EQ(diameter, 4);
+}
+
+TEST_F(BFSAgentTest, BFSAgentCheckDiameter2)
+{
+  std::string const csvData =
+      "Центральный;Ленинский;метро, линия 1 \n"
+      "Кировский;Советский;автобус №12 \n"
+      "Ленинский;Октябрьский;автобус №7 \n"
+      "Советский;Дзержинский;трамвай №4 \n"
+      "Октябрьский;Заельцовский;автобус №15 \n"
+      "Дзержинский;Железнодорожный;автобус №23 \n"
+      "Заельцовский;Железнодорожный;автобус №31 \n";
+
+  ScAddr city = CreateAndAnalyzeGraph(csvData);
+  EXPECT_TRUE(city.IsValid());
+
+  int diameter = FindDiameterValueOfCity(city);
+  EXPECT_EQ(diameter, 7);
+}
+
+TEST_F(BFSAgentTest, BFSAgentCheckNoDiameter)
+{
+  std::string const csvData =
+      "Дзержинский;Железнодорожный;автобус №23 \n"
+      "Заельцовский;Центральный;автобус №31 \n";
+
+  ScAddr city = CreateAndAnalyzeGraph(csvData);
+  EXPECT_TRUE(city.IsValid());
+
+  int diameter = FindDiameterValueOfCity(city);
+  EXPECT_EQ(diameter, 0);
+}
