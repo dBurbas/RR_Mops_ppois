@@ -49,8 +49,8 @@ void CreateGraphAgent::GetDistrict(ScAddr & districtNode, std::string const & na
   {
     throw std::invalid_argument("Name of district can't be empty!");
   }
-  auto district = this->translateMap_.find(nameOfDistrict);
-  if (district == this->translateMap_.end())
+  auto district = GetElementByMainIdentifier(nameOfDistrict);
+  if (district == ScAddr())
   {
     std::string const & resultSystemIdentifier =
         BASE_NAME_OF_NODES + std::to_string(GetNumberOfCurrentSystemIdentifier(BASE_NAME_OF_NODES));
@@ -65,12 +65,10 @@ void CreateGraphAgent::GetDistrict(ScAddr & districtNode, std::string const & na
         m_context.GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::nrel_main_idtf, arcCommonAddr);
     ScAddr const & districtToClassOfDistricts =
         m_context.GenerateConnector(ScType::ConstPermPosArc, GraphKeynodes::concept_district, districtNode);
-    this->translateMap_[nameOfDistrict] = resultSystemIdentifier;
   }
   else
   {
-    std::string const & resultSystemIdentifier = this->translateMap_[nameOfDistrict];
-    districtNode = m_context.SearchElementBySystemIdentifier(resultSystemIdentifier);
+    districtNode = district;
   }
 }
 
@@ -92,6 +90,27 @@ void CreateGraphAgent::GetTypeOfRoute(ScAddr & typeOfRoute, std::string const & 
   {
     throw std::invalid_argument("This type of transport is not defined!");
   }
+}
+
+ScAddr CreateGraphAgent::GetElementByMainIdentifier(std::string const & district)
+{
+  ScIterator5Ptr it = m_context.CreateIterator5(
+      ScType::ConstNode,
+      ScType::ConstCommonArc,
+      ScType::ConstNodeLink,
+      ScType::ConstPermPosArc,
+      ScKeynodes::nrel_main_idtf);
+  while (it->Next())
+  {
+    ScAddr infoLink = it->Get(2);
+    std::string nameDistrict;
+    m_context.GetLinkContent(infoLink, nameDistrict);
+    if (nameDistrict == district)
+    {
+      return it->Get(0);
+    }
+  }
+  return ScAddr();
 }
 
 void CreateGraphAgent::GenerateRoutes(std::vector<std::string> const & resOfSplit, ScStructure & city)
