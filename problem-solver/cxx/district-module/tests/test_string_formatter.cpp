@@ -105,7 +105,7 @@ TEST(StringOperationInSystemIdentifierTest, GetIntNumber)
 TEST(StringOperationInSystemIdentifierFailTest, GetDigitsLogicError)
 {
   ASSERT_THROW(
-      DividerNumberFromString::GetNumberOfRouteOrDistrict("Artem"),
+      DividerNumberFromString::GetNumberOfRouteOrDistrict("Artemdjdj"),
       std::logic_error
     );
 }
