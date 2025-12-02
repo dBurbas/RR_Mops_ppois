@@ -4,8 +4,6 @@
 #include "agents/create_graph_district_agent.hpp"
 #include "keynodes/graph_district_keynodes.hpp"
 #include "settings/settings.hpp"
-#include <thread>
-#include <chrono>
 
 using AgentTest = ScMemoryTest;
 
@@ -38,7 +36,8 @@ protected:
 
     createAction.InitiateAndWait();
     ScStructure city = createAction.GetResult();
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    ScWaiter waiter;
+    waiter.Wait(500);
     return city;
   }
 
