@@ -14,6 +14,7 @@ public:
   // Находит или создаёт узел района по заданному текстовому имени
   void GetDistrict(ScAddr & districtNode, std::string const & nameOfDistrict);
 
+  // Возвращает ScAddr элемента с заданным основным идентификатором (или ScAddr() если не найден)
   ScAddr GetElementByMainIdentifier(std::string const & district);
 
   // Помечает маршрут соответствующим видом транспорта (автобус, трамвай, метро)
@@ -27,7 +28,4 @@ public:
 
   // Основная логика агента: читает путь к csv и строит транспортный граф города
   ScResult DoProgram(ScActionInitiatedEvent const & event, ScAction & action) override;
-
-  // Словарь "имя района - системный идентификатор узла"
-  // std::map<std::string, std::string> translateMap_;
 };
