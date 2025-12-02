@@ -217,6 +217,11 @@ ScResult CreateGraphAgent::DoProgram(ScActionInitiatedEvent const & event, ScAct
     m_logger.Error(e.what());
     return action.FinishUnsuccessfully();
   }
+  catch (std::logic_error const & e)
+  {
+    m_logger.Error(e.what());
+    return action.FinishUnsuccessfully();
+  }
   catch (...)
   {
     return action.FinishUnsuccessfully();

@@ -67,7 +67,7 @@ std::string DividerNumberFromString::GetNumberOfRouteOrDistrict(std::string cons
   {
     start_pos--;
   }
-  if (start_pos < 0)
+  if (start_pos == str.size() - 1 || start_pos < 0)
   {
     throw std::logic_error("Incorrect input name of route");
   }
