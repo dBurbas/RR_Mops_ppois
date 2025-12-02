@@ -123,7 +123,7 @@ TEST_F(DFSAgentTest, DFSAgentAnalyzesConnectedGraph)
       "Заельцовский;Железнодорожный;автобус №31\n";
 
   ScAddr city = CreateAndAnalyzeGraph(csvData);
-  EXPECT_TRUE(city.IsValid());
+  ASSERT_TRUE(city.IsValid());
 
   EXPECT_TRUE(CheckConnection(GraphKeynodes::concept_connect_graph, city));
   EXPECT_FALSE(CheckConnection(GraphKeynodes::concept_noconnect_graph, city));
@@ -136,7 +136,7 @@ TEST_F(DFSAgentTest, DFSAgentAnalyzesDisconnectedGraph)
       "Октябрьский;Центральный;трамвай 2";
 
   ScAddr city = CreateAndAnalyzeGraph(csvData);
-  EXPECT_TRUE(city.IsValid());
+  ASSERT_TRUE(city.IsValid());
 
   EXPECT_TRUE(CheckConnection(GraphKeynodes::concept_noconnect_graph, city));
   EXPECT_FALSE(CheckConnection(GraphKeynodes::concept_connect_graph, city));
@@ -150,7 +150,7 @@ TEST_F(DFSAgentTest, DFSAgentFindsConnectivityComponents)
       "Центральный;Советский;автобус 3";
 
   ScAddr city = CreateAndAnalyzeGraph(csvData);
-  EXPECT_TRUE(city.IsValid());
+  ASSERT_TRUE(city.IsValid());
 
   int componentCount = CountComponentsOfConnectivity(city);
   EXPECT_EQ(componentCount, 2);
@@ -170,7 +170,7 @@ TEST_F(DFSAgentTest, DFSAgentFindsBridgesInCyclicGraph)
       "Заельцовский;Железнодорожный;автобус №31\n";
 
   ScAddr city = CreateAndAnalyzeGraph(csvData);
-  EXPECT_TRUE(city.IsValid());
+  ASSERT_TRUE(city.IsValid());
 
   ScAddr nodeTuple = FindNodeTuple(city);
   EXPECT_TRUE(nodeTuple.IsValid());
@@ -192,7 +192,7 @@ TEST_F(DFSAgentTest, DFSAgentIdentifiesBridgeInGraph)
       "Заельцовский;Железнодорожный;автобус №31\n";
 
   ScAddr city = CreateAndAnalyzeGraph(csvData);
-  EXPECT_TRUE(city.IsValid());
+  ASSERT_TRUE(city.IsValid());
 
   ScAddr nodeTuple = FindNodeTuple(city);
   EXPECT_TRUE(nodeTuple.IsValid());

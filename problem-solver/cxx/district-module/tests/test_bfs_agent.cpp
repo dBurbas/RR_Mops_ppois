@@ -163,7 +163,7 @@ TEST_F(BFSAgentTest, BFSAgentCheckDistanceBetweenDistricts)
   EXPECT_EQ(dist3, INF);
 }
 
-TEST_F(BFSAgentTest, BFSAgentCheckDiameter)
+TEST_F(BFSAgentTest, BFSAgentCheckDiameterAndCentralDistricts)
 {
   std::string const csvData =
       "Центральный;Кировский;автобус №5\n"
@@ -185,7 +185,7 @@ TEST_F(BFSAgentTest, BFSAgentCheckDiameter)
   EXPECT_EQ(countCentralDist, 8);
 }
 
-TEST_F(BFSAgentTest, BFSAgentCheckDiameter2)
+TEST_F(BFSAgentTest, BFSAgentCheckDiameterAndCenrtralDistricts2)
 {
   std::string const csvData =
       "Центральный;Ленинский;метро, линия 1\n"
@@ -206,7 +206,7 @@ TEST_F(BFSAgentTest, BFSAgentCheckDiameter2)
   EXPECT_EQ(countCentralDist, 2);
 }
 
-TEST_F(BFSAgentTest, BFSAgentCheckNoDiameter)
+TEST_F(BFSAgentTest, BFSAgentCheckNoDiameterAndCentralDistricts)
 {
   std::string const csvData =
       "Дзержинский;Железнодорожный;автобус №23\n"

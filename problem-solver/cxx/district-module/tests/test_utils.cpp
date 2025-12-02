@@ -3,6 +3,7 @@
 #include <string>
 #include "../utils/utils.hpp"
 #include "../settings/settings.hpp"
+#include <sc-memory/sc_memory.hpp>
 
 TEST(OperationsWithMapTest, GetNumberByFuncGetMin)
 {

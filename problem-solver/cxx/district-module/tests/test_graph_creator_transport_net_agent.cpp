@@ -6,7 +6,7 @@
 
 using AgentTest = ScMemoryTest;
 
-class AgentTestCreationGraph : public AgentTest
+class CreationGraphAgentTest : public AgentTest
 {
 protected:
   ScAction CreateGraphActionWithCsv(std::string const & csvData)
@@ -25,7 +25,7 @@ protected:
   }
 };
 
-TEST_F(AgentTestCreationGraph, CreateGraphAgentBuildsCityGraphFromCsvFormat)
+TEST_F(CreationGraphAgentTest, CreateGraphAgentBuildsCityGraphFromCsvFormat)
 {
   std::string const csvData =
       "Ленинский;Кировский;автобус 1\n"
@@ -59,7 +59,7 @@ TEST_F(AgentTestCreationGraph, CreateGraphAgentBuildsCityGraphFromCsvFormat)
   m_ctx->UnsubscribeAgent<CreateGraphAgent>();
 }
 
-TEST_F(AgentTestCreationGraph, CreateGraphAgentFailsIfNoFilePathLink)
+TEST_F(CreationGraphAgentTest, CreateGraphAgentFailsIfNoFilePathLink)
 {
   m_ctx->SubscribeAgent<CreateGraphAgent>();
 
@@ -72,7 +72,7 @@ TEST_F(AgentTestCreationGraph, CreateGraphAgentFailsIfNoFilePathLink)
   m_ctx->UnsubscribeAgent<CreateGraphAgent>();
 }
 
-TEST_F(AgentTestCreationGraph, CreateGraphAgentBuildsCityGraphFromCsvFormatIncorrect)
+TEST_F(CreationGraphAgentTest, CreateGraphAgentBuildsCityGraphFromCsvFormatIncorrect)
 {
   std::string const csvData2 =
       "Ленинский;Кировский;автобус 1\n"
@@ -87,7 +87,7 @@ TEST_F(AgentTestCreationGraph, CreateGraphAgentBuildsCityGraphFromCsvFormatIncor
   m_ctx->UnsubscribeAgent<CreateGraphAgent>();
 }
 
-TEST_F(AgentTestCreationGraph, CreateGraphAgentBuildsCityGraphFromCsvFormatIncorrectEmptyDistr)
+TEST_F(CreationGraphAgentTest, CreateGraphAgentBuildsCityGraphFromCsvFormatIncorrectEmptyDistr)
 {
   std::string const csvData3 =
       "Ленинский;;автобус 1\n"
