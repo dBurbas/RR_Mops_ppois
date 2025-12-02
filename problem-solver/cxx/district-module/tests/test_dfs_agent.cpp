@@ -42,12 +42,12 @@ protected:
     return city;
   }
 
-  bool CheckConnection(ScAddr const & concept, ScAddr const & element)
+  bool CheckConnection(const ScAddr & conceptClass , ScAddr const & element)
   {
-    if (!concept.IsValid() || !element.IsValid())
+    if (!conceptClass.IsValid() || !element.IsValid())
       return false;
 
-    ScIterator3Ptr it = m_ctx->CreateIterator3(concept, ScType::ConstPermPosArc, element);
+    ScIterator3Ptr it = m_ctx->CreateIterator3(conceptClass, ScType::ConstPermPosArc, element);
     return it->Next();
   }
 

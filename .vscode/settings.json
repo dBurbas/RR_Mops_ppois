@@ -145,5 +145,13 @@
         "stdfloat": "cpp",
         "typeindex": "cpp"
     },
-    "C_Cpp.errorSquiggles": "disabled"
+    "emeraldwalk.runonsave": {
+        "commands": [
+            {
+                "match": "\\.(cpp|hpp)$",
+                "isAsync": true,
+                "cmd": "${workspaceRoot}/scripts/clang/format_code.sh ${file}"
+            }
+        ]
+        }
 }

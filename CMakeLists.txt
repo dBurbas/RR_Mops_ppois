@@ -35,12 +35,23 @@ find_package(sc-machine REQUIRED)
 find_package(scl-machine REQUIRED)
 find_package(ps-common-lib REQUIRED)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/problem-solver)
 option(ENABLE_COVERAGE "Enable coverage" OFF)
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/problem-solver)
 
 if(ENABLE_COVERAGE
    AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
-  target_compile_options(transport-net-agents-tests PRIVATE --coverage -O0 -g)
-  target_link_options(transport-net-agents-tests PRIVATE --coverage)
+   set_source_files_properties(
+      agents/bfs_agent.cpp
+      agents/dfs_agent.cpp
+      agents/create_graph_district_agent.cpp
+    PROPERTIES
+      COMPILE_OPTIONS "--coverage;-O0;-g"
+    )
+    target_compile_options(transport-net-agents-tests PRIVATE --coverage -O0 -g)
+    foreach(tgt
+          district-module
+          transport-net-agents-tests)
+    target_link_options(${tgt} PRIVATE --coverage)
+    endforeach()
 endif()
-
